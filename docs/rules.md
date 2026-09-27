@@ -38,6 +38,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | `MinLength(int $minimum)` | The value is a string of at least that many characters. | `{input} must be at least {minimum} characters long` |
 | `MaxLength(int $maximum)` | The value is a string of at most that many characters. | `{input} must be at most {maximum} characters long` |
 | `Url` | The value is a string that is a valid URL. | `{input} must be a valid URL` |
+| `Uuid` | The value is a UUID string in its canonical, hyphenated form, in any version. | `{input} must be a valid UUID` |
 
 ### Numeric
 
