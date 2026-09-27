@@ -6,6 +6,8 @@ namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
+use function array_key_exists;
+
 final readonly class Validator implements ValidatorContract
 {
     /**
@@ -23,13 +25,20 @@ final readonly class Validator implements ValidatorContract
     public function validate(array $input): ValidationResult
     {
         $errors = [];
+        $validated = [];
 
         foreach ($this->rules as $field => $ruleSet) {
-            foreach ($ruleSet->validate($input[$field] ?? null) as $error) {
+            $fieldErrors = $ruleSet->validate($input[$field] ?? null);
+
+            foreach ($fieldErrors as $error) {
                 $errors[] = $error->prefix($field);
+            }
+
+            if ($fieldErrors === [] && array_key_exists($field, $input)) {
+                $validated[$field] = $input[$field];
             }
         }
 
-        return new ValidationResult($errors);
+        return new ValidationResult($errors, $validated);
     }
 }
