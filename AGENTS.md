@@ -17,8 +17,7 @@ and say what is ready.
 
 ## Tests
 Line coverage of `src` must stay at 100%; `composer coverage` fails below it and lists the uncovered lines. Add tests 
-in `tests` with every implementation change. The empty scaffold explicitly skips tests and coverage until PHP files 
-exist in `src` or `tests`; after that, the full checks are required.
+in `tests` with every implementation change.
 
 ## Development
 Use the PHP container for Composer and PHP commands; see [README.md](README.md). This package has no database services or 
@@ -28,6 +27,8 @@ types in every PHP file.
 
 ## Exceptions
 Read and follow https://github.com/dirthara/coding-standards/blob/main/docs/coding-standards/cs-7-exceptions-error-handling.md when creating or modifying exceptions.
+Every exception implements `Dirthara\Validation\Exception\ValidationException` and uses the 
+`HasExceptionContext` trait for its context.
 
 ## Documentation
 Read and follow https://github.com/dirthara/coding-standards/blob/main/docs/coding-standards/cs-6-documentation.md when writing the README or anything in `docs`.

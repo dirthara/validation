@@ -47,9 +47,8 @@ docker compose exec php composer test
 
 Tests belong in `tests`, under `Dirthara\Validation\Tests`. Source belongs in`src`, under `Dirthara\Validation`.
 
-The initial scaffold has no PHP source or tests. Test and coverage commands explicitly report that checks are not 
-applicable while both directories contain no PHP files. As soon as either contains PHP files, PHPUnit and the coverage
-gate run normally; an empty test suite fails.
+The package starts with its exception interface, `Dirthara\Validation\Exception\ValidationException`, and the 
+`HasExceptionContext` trait every exception uses to carry its context, both covered by tests.
 
 ## Code quality
 
