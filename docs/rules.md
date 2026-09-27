@@ -35,6 +35,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 |------|-------------|-----------------|
 | `Email` | The value is a string that is a valid email address. | `{input} must be a valid email address` |
 | `Length(int $length)` | The value is a string of exactly that many characters. | `{input} must be exactly {length} characters long` |
+| `MinLength(int $minimum)` | The value is a string of at least that many characters. | `{input} must be at least {minimum} characters long` |
 
 ### Numeric
 
