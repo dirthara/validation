@@ -10,10 +10,10 @@ that caused it. Rules are small immutable objects, and nested input is validated
 writing dotted field names.
 
 ```php
-use Dirthara\Validation\Rule\Each;
-use Dirthara\Validation\Rule\Email;
-use Dirthara\Validation\Rule\Nested;
-use Dirthara\Validation\Rule\Required;
+use Dirthara\Validation\Rule\Collection\Each;
+use Dirthara\Validation\Rule\String\Email;
+use Dirthara\Validation\Rule\Structure\Nested;
+use Dirthara\Validation\Rule\Presence\Required;
 use Dirthara\Validation\ValidatorFactory;
 
 $factory = new ValidatorFactory();

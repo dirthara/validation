@@ -11,8 +11,8 @@ description: Create a validator, give each field its rules, and understand how m
 a list of rules, and returns a `Dirthara\Validation\Contract\Validator`.
 
 ```php
-use Dirthara\Validation\Rule\Email;
-use Dirthara\Validation\Rule\Required;
+use Dirthara\Validation\Rule\String\Email;
+use Dirthara\Validation\Rule\Presence\Required;
 use Dirthara\Validation\ValidatorFactory;
 
 $validator = new ValidatorFactory()->create([

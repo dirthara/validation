@@ -7,9 +7,12 @@ description: The rules Dirthara Validation ships, and how to write your own.
 
 ## Available rules
 
-All rules live in `Dirthara\Validation\Rule`. The message in each table is the rule's default.
+Rules are grouped by what they check, each group in its own namespace under `Dirthara\Validation\Rule`. The message
+in each table is the rule's default.
 
 ### Presence
+
+In `Dirthara\Validation\Rule\Presence`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
@@ -18,6 +21,8 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | `Nullable` | Never fails. Makes the field pass for `null`. | `{input} may be null` |
 
 ### Type
+
+In `Dirthara\Validation\Rule\Type`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
@@ -31,6 +36,8 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 
 ### String
 
+In `Dirthara\Validation\Rule\String`.
+
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 | `Email` | The value is a string that is a valid email address. | `{input} must be a valid email address` |
@@ -42,21 +49,29 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 
 ### Numeric
 
+In `Dirthara\Validation\Rule\Numeric`.
+
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 
 ### Choice
+
+In `Dirthara\Validation\Rule\Choice`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 
 ### Collections
 
+In `Dirthara\Validation\Rule\Collection`.
+
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 | `Each(Rule\|list<Rule>)` | The value is iterable and every item passes the rules. | `{input} must be iterable` |
 
 ### Structure
+
+In `Dirthara\Validation\Rule\Structure`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|

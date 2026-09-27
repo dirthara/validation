@@ -6,12 +6,12 @@ namespace Dirthara\Validation\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Validator;
-use Dirthara\Validation\Rule\Email;
-use Dirthara\Validation\Rule\Nested;
-use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
+use Dirthara\Validation\Rule\String\Email;
+use Dirthara\Validation\Rule\Structure\Nested;
+use Dirthara\Validation\Rule\Presence\Required;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class ValidatorFactoryTest extends TestCase
