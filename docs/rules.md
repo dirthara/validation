@@ -7,16 +7,51 @@ description: The rules Dirthara Validation ships, and how to write your own.
 
 ## Available rules
 
-All rules live in `Dirthara\Validation\Rule`.
+All rules live in `Dirthara\Validation\Rule`. The message in each table is the rule's default.
 
-| Rule                         | Passes when                                              | Default message                           |
-|------------------------------|----------------------------------------------------------|-------------------------------------------|
-| `Required`                   | The value is present and not `null`.                     | `{input} is required`                     |
-| `Present`                    | The value is present, even when it is `null`.            | `{input} must be present`                 |
-| `Nullable`                   | Never fails. Makes the field pass for `null`.            | `{input} may be null`                     |
-| `Email`                      | The value is a string that is a valid email address.     | `{input} must be a valid email address`   |
-| `Each(Rule\|list<Rule>)`     | The value is iterable and every item passes the rules.   | `{input} must be iterable`                |
-| `Nested(Validator)`          | The value is an array that passes the nested validator.  | `{input} must be an array`                |
+### Presence
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `Required` | The value is present and not `null`. | `{input} is required` |
+| `Present` | The value is present, even when it is `null`. | `{input} must be present` |
+| `Nullable` | Never fails. Makes the field pass for `null`. | `{input} may be null` |
+
+### Type
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `StringType` | The value is a string. | `{input} must be a string` |
+
+### String
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `Email` | The value is a string that is a valid email address. | `{input} must be a valid email address` |
+
+### Numeric
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+
+### Choice
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+
+### Collections
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `Each(Rule\|list<Rule>)` | The value is iterable and every item passes the rules. | `{input} must be iterable` |
+
+### Structure
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `Nested(Validator)` | The value is an array that passes the nested validator. | `{input} must be an array` |
+
+No rule converts a value: a numeric string such as `"18"` is a string, not a number, and fails the numeric rules.
 
 Every rule takes a `message` argument that replaces its default, as in `new Email(message: '{input} is not an email')`.
 The message in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
