@@ -30,17 +30,30 @@ An entry that is not a rule, such as a string or a validator that is not wrapped
 
 ## Missing and null values
 
-A field that is missing from the input and a field whose value is `null` are treated the same way: only the rules that
-implement `Dirthara\Validation\Contract\ValidatesNull` run for them, still in order. `Required` is one of those rules.
+A field that is missing from the input and a field whose value is `null` are different things.
 
-| The field has                    | A missing or `null` value                           |
-|----------------------------------|-----------------------------------------------------|
-| A `Required` rule                | Fails with the `required` error.                    |
-| No rule that validates `null`    | Passes. None of its rules run.                      |
+A **missing** field reaches its rules as `Dirthara\Validation\Missing::Value`. Only the rules that implement
+`Dirthara\Validation\Contract\ValidatesMissing` run for it, still in order, so a field is optional unless it has one
+of them. `Required` and `Present` are two such rules.
 
-Every other rule only ever sees a value that is present and not `null`, so it never has to check for one, and a field
-without `Required` is optional by default. The same applies to the items of an `Each` rule and the fields of a `Nested`
-rule.
+**`null`** is an ordinary value, and every rule receives it. Rules that expect a certain type, such as `Email`, `Each`,
+and `Nested`, reject it. Add `Nullable` to a field's rules to accept `null`: the field then passes for `null` without
+running any of its other rules. Where `Nullable` stands in the list does not matter.
+
+| Rules                                           | Missing                  | `null`                   |
+|-------------------------------------------------|--------------------------|--------------------------|
+| `new Email()`                                   | Passes                   | Fails with `email`       |
+| `[new Nullable(), new Email()]`                 | Passes                   | Passes                   |
+| `[new Required(), new Email()]`                 | Fails with `required`    | Fails with `required`    |
+| `[new Present(), new Nullable(), new Email()]`  | Fails with `present`     | Passes                   |
+
+Any other value is checked by `Email` in every row. The last row is a field that has to be sent, but may be `null`, such
+as a value a client clears on purpose.
+
+:::caution
+`Nullable` takes precedence over `Required`: with both, `null` passes and only a missing field fails. Use `Present`
+together with `Nullable` to say that, and `Required` alone when `null` is not allowed.
+:::
 
 ## Rules run in order and stop at the first failure
 

@@ -8,17 +8,17 @@ use Dirthara\Validation\Missing;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Contract\ValidatesMissing;
 
-final readonly class Required implements ValidatesMissing
+final readonly class Present implements ValidatesMissing
 {
     /**
      * @return list<ValidationError>
      */
     public function validate(mixed $value): array
     {
-        if (!$value instanceof Missing && $value !== null) {
+        if (!$value instanceof Missing) {
             return [];
         }
 
-        return [new ValidationError(message: 'The value is required.', code: 'required')];
+        return [new ValidationError(message: 'The value must be present.', code: 'present')];
     }
 }

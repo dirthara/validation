@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
-use Dirthara\Validation\Contract\ValidatesNull;
+use Dirthara\Validation\Contract\AcceptsValue;
+use Dirthara\Validation\Contract\ValidatesMissing;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_array;
@@ -42,7 +43,13 @@ final readonly class RuleSet
     public function validate(mixed $value): array
     {
         foreach ($this->rules as $rule) {
-            if ($value === null && !$rule instanceof ValidatesNull) {
+            if ($rule instanceof AcceptsValue && $rule->accepts($value)) {
+                return [];
+            }
+        }
+
+        foreach ($this->rules as $rule) {
+            if ($value instanceof Missing && !$rule instanceof ValidatesMissing) {
                 continue;
             }
 

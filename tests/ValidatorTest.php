@@ -10,6 +10,8 @@ use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Present;
+use Dirthara\Validation\Rule\Nullable;
 use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
@@ -53,14 +55,32 @@ final class ValidatorTest extends TestCase
     }
 
     #[Test]
-    public function it_treats_a_missing_field_like_a_null_one(): void
+    public function it_tells_a_missing_field_from_a_null_one(): void
     {
-        $validator = new Validator(['name' => RuleSet::from(new Required())]);
-        $required = new ValidationError(message: 'The value is required.', code: 'required', path: ['name']);
+        $validator = new ValidatorFactory()->create([
+            'name' => new Required(),
+            'deleted_at' => [new Present(), new Nullable(), new Email()],
+            'nickname' => new Email(),
+        ]);
 
-        self::assertEquals([$required], $validator->validate([])->errors);
-        self::assertEquals([$required], $validator->validate(['name' => null])->errors);
-        self::assertSame([], $validator->validate(['name' => 'Ada'])->errors);
+        self::assertEquals(
+            [
+                new ValidationError(message: 'The value is required.', code: 'required', path: ['name']),
+                new ValidationError(message: 'The value must be present.', code: 'present', path: ['deleted_at']),
+            ],
+            $validator->validate([])->errors,
+        );
+        self::assertEquals(
+            [
+                new ValidationError(message: 'The value is required.', code: 'required', path: ['name']),
+                new ValidationError(
+                    message: 'The value must be a valid email address.',
+                    code: 'email',
+                    path: ['nickname'],
+                ),
+            ],
+            $validator->validate(['name' => null, 'deleted_at' => null, 'nickname' => null])->errors,
+        );
     }
 
     #[Test]
@@ -104,7 +124,7 @@ final class ValidatorTest extends TestCase
             'backup' => new Email(),
             'name' => new Required(),
             'nickname' => new Email(),
-            'note' => new Email(),
+            'note' => [new Nullable(), new Email()],
         ]);
 
         $result = $validator->validate([

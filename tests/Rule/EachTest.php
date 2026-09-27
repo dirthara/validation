@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Nullable;
 use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
@@ -75,13 +76,13 @@ final class EachTest extends TestCase
     }
 
     #[Test]
-    public function it_skips_a_null_item_unless_it_is_required(): void
+    public function it_passes_a_null_item_to_its_rules(): void
     {
-        self::assertSame([], new Each(new Email())->validate(['a@example.com', null]));
         self::assertEquals(
-            [new ValidationError(message: 'The value is required.', code: 'required', path: [1])],
-            new Each([new Required(), new Email()])->validate(['a@example.com', null]),
+            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
+            new Each(new Email())->validate(['a@example.com', null]),
         );
+        self::assertSame([], new Each([new Nullable(), new Email()])->validate(['a@example.com', null]));
     }
 
     #[Test]
@@ -100,6 +101,7 @@ final class EachTest extends TestCase
                 ),
                 new ValidationError(message: 'The value is required.', code: 'required', path: [2, 'email']),
                 new ValidationError(message: 'The value must be an array.', code: 'array', path: [3]),
+                new ValidationError(message: 'The value must be an array.', code: 'array', path: [4]),
             ],
             $errors,
         );

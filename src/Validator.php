@@ -28,14 +28,15 @@ final readonly class Validator implements ValidatorContract
         $validated = [];
 
         foreach ($this->rules as $field => $ruleSet) {
-            $fieldErrors = $ruleSet->validate($input[$field] ?? null);
+            $value = array_key_exists($field, $input) ? $input[$field] : Missing::Value;
+            $fieldErrors = $ruleSet->validate($value);
 
             foreach ($fieldErrors as $error) {
                 $errors[] = $error->prefix($field);
             }
 
-            if ($fieldErrors === [] && array_key_exists($field, $input)) {
-                $validated[$field] = $input[$field];
+            if ($fieldErrors === [] && !$value instanceof Missing) {
+                $validated[$field] = $value;
             }
         }
 

@@ -12,12 +12,15 @@ All rules live in `Dirthara\Validation\Rule`.
 | Rule                         | Passes when                                              | Error code |
 |------------------------------|----------------------------------------------------------|------------|
 | `Required`                   | The value is present and not `null`.                     | `required` |
+| `Present`                    | The value is present, even when it is `null`.            | `present`  |
+| `Nullable`                   | Never fails. Makes the field pass for `null`.            |            |
 | `Email`                      | The value is a string that is a valid email address.     | `email`    |
 | `Each(Rule\|list<Rule>)`     | The value is iterable and every item passes the rules.   | `iterable` |
 | `Nested(Validator)`          | The value is an array that passes the nested validator.  | `array`    |
 
-The error code in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the
-rules they contain.
+The error code in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
+they contain. See [missing and null values](validating-input.md#missing-and-null-values) for how `Required`,
+`Present`, and `Nullable` combine.
 
 :::note
 `Email` uses PHP's `FILTER_VALIDATE_EMAIL`, which only accepts ASCII addresses. An internationalised address, such as
@@ -57,7 +60,8 @@ $validator = $factory->create([
 ## Write your own rule
 
 A rule implements `Dirthara\Validation\Contract\Rule` and returns a list of errors, which is empty when the value
-passes. It never receives a missing or `null` value, so it does not need to check for one.
+passes. It never receives a missing value, but it does receive `null`, which it should reject unless `null` is valid
+for it. Users accept `null` for a field by adding `Nullable` to its rules.
 
 ```php
 use Dirthara\Validation\Contract\Rule;
@@ -87,25 +91,54 @@ final readonly class MinLength implements Rule
 Leave the path of the error empty. The validator adds the field, and `Each` and `Nested` add their keys, on the way
 back up.
 
-## Validate null yourself
+## Validate a missing value yourself
 
-A rule that has to decide what a missing or `null` value means, such as a conditional required rule, implements
-`Dirthara\Validation\Contract\ValidatesNull` instead of `Rule`. It then runs for `null` too, in its place among the
-other rules, and has to handle every value itself.
+A rule that has to decide what a missing value means, such as a conditional required rule, implements
+`Dirthara\Validation\Contract\ValidatesMissing` instead of `Rule`. It then also runs for a missing field, in its place
+among the other rules, and receives `Dirthara\Validation\Missing::Value` as the value.
 
 ```php
+use Dirthara\Validation\Missing;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Contract\ValidatesNull;
+use Dirthara\Validation\Contract\ValidatesMissing;
 
-final readonly class NotNull implements ValidatesNull
+final readonly class RequiredWhen implements ValidatesMissing
 {
+    public function __construct(
+        private bool $condition,
+    ) {}
+
     public function validate(mixed $value): array
     {
-        if ($value !== null) {
+        if (!$this->condition || !$value instanceof Missing) {
             return [];
         }
 
-        return [new ValidationError(message: 'The value must not be null.', code: 'not_null')];
+        return [new ValidationError(message: 'The value is required.', code: 'required')];
+    }
+}
+```
+
+## Accept a value outright
+
+A rule that makes a field pass for certain values, the way `Nullable` does for `null`, implements
+`Dirthara\Validation\Contract\AcceptsValue`. Before any rule runs, every such rule in the field's list is asked
+whether it `accepts()` the value. If one does, the field passes and no other rule runs, wherever the accepting rule
+stands in the list. Its `validate()` runs like any other rule's for values it does not accept.
+
+```php
+use Dirthara\Validation\Contract\AcceptsValue;
+
+final readonly class AllowEmptyString implements AcceptsValue
+{
+    public function accepts(mixed $value): bool
+    {
+        return $value === '';
+    }
+
+    public function validate(mixed $value): array
+    {
+        return [];
     }
 }
 ```
