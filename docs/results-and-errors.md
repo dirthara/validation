@@ -21,7 +21,7 @@ description: What a validation returns, and what each error carries.
 
 `validated` holds the input value of every field that has rules, is present in the input, and passed. A field that
 failed, a missing field, and a field without rules are left out. A field that is present with a `null` value and has no
-`Required` rule passes, so it is included with its `null` value.
+rule that validates `null`, such as `Required`, passes, so it is included with its `null` value.
 
 The values are the input as given. Validation does not convert or trim them.
 

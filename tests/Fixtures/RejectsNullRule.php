@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Rule;
+namespace Dirthara\Validation\Tests\Fixtures;
 
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Contract\ValidatesNull;
 
-final readonly class Required implements ValidatesNull
+final readonly class RejectsNullRule implements ValidatesNull
 {
     /**
      * @return list<ValidationError>
@@ -18,6 +18,6 @@ final readonly class Required implements ValidatesNull
             return [];
         }
 
-        return [new ValidationError(message: 'The value is required.', code: 'required')];
+        return [new ValidationError(message: 'The value must not be null.', code: 'not_null')];
     }
 }

@@ -86,3 +86,26 @@ final readonly class MinLength implements Rule
 
 Leave the path of the error empty. The validator adds the field, and `Each` and `Nested` add their keys, on the way
 back up.
+
+## Validate null yourself
+
+A rule that has to decide what a missing or `null` value means, such as a conditional required rule, implements
+`Dirthara\Validation\Contract\ValidatesNull` instead of `Rule`. It then runs for `null` too, in its place among the
+other rules, and has to handle every value itself.
+
+```php
+use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Contract\ValidatesNull;
+
+final readonly class NotNull implements ValidatesNull
+{
+    public function validate(mixed $value): array
+    {
+        if ($value !== null) {
+            return [];
+        }
+
+        return [new ValidationError(message: 'The value must not be null.', code: 'not_null')];
+    }
+}
+```

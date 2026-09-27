@@ -30,15 +30,17 @@ An entry that is not a rule, such as a string or a validator that is not wrapped
 
 ## Missing and null values
 
-A field that is missing from the input and a field whose value is `null` are treated the same way:
+A field that is missing from the input and a field whose value is `null` are treated the same way: only the rules that
+implement `Dirthara\Validation\Contract\ValidatesNull` run for them, still in order. `Required` is one of those rules.
 
-| The field has                    | A missing or `null` value                      |
-|----------------------------------|------------------------------------------------|
-| A `Required` rule                | Fails with the `required` error.               |
-| No `Required` rule               | Passes. None of its other rules run.           |
+| The field has                    | A missing or `null` value                           |
+|----------------------------------|-----------------------------------------------------|
+| A `Required` rule                | Fails with the `required` error.                    |
+| No rule that validates `null`    | Passes. None of its rules run.                      |
 
-Every other rule only ever sees a value that is present and not `null`, so a rule never has to check for one. The same
-applies to the items of an `Each` rule and the fields of a `Nested` rule.
+Every other rule only ever sees a value that is present and not `null`, so it never has to check for one, and a field
+without `Required` is optional by default. The same applies to the items of an `Each` rule and the fields of a `Nested`
+rule.
 
 ## Rules run in order and stop at the first failure
 

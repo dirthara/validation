@@ -8,9 +8,16 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Contract\ValidatesNull;
 
 final class RequiredTest extends TestCase
 {
+    #[Test]
+    public function it_validates_null(): void
+    {
+        self::assertInstanceOf(ValidatesNull::class, new Required());
+    }
+
     #[Test]
     public function it_accepts_any_value_but_null(): void
     {

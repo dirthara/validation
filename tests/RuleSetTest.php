@@ -15,6 +15,7 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
+use Dirthara\Validation\Tests\Fixtures\RejectsNullRule;
 
 final class RuleSetTest extends TestCase
 {
@@ -94,7 +95,7 @@ final class RuleSetTest extends TestCase
     }
 
     #[Test]
-    public function it_runs_only_the_required_rule_for_a_null_value(): void
+    public function it_runs_only_the_rules_that_validate_null_for_a_null_value(): void
     {
         $rules = RuleSet::from([new FailingRule(), new Required(), new Email()]);
 
@@ -105,6 +106,17 @@ final class RuleSetTest extends TestCase
         self::assertEquals(
             [new ValidationError(message: 'The value failed.', code: 'failing')],
             $rules->validate('a@example.com'),
+        );
+    }
+
+    #[Test]
+    public function it_runs_any_rule_that_validates_null_for_a_null_value_in_order(): void
+    {
+        $rules = RuleSet::from([new Email(), new RejectsNullRule(), new Required()]);
+
+        self::assertEquals(
+            [new ValidationError(message: 'The value must not be null.', code: 'not_null')],
+            $rules->validate(null),
         );
     }
 
