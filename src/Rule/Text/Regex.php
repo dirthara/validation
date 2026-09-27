@@ -18,7 +18,7 @@ final readonly class Regex implements Rule
         public string $message = '{input} has an invalid format',
     ) {
         // @mago-expect lint:no-error-control-operator An invalid pattern is reported as an InvalidRuleException instead
-        if (@preg_match($this->pattern, '') === false) {
+        if (@preg_match($this->pattern, subject: '') === false) {
             throw InvalidRuleException::invalidPattern($this->pattern);
         }
     }
