@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests;
 
+use Error;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
@@ -59,5 +60,27 @@ final class ValidationErrorTest extends TestCase
 
         self::assertSame(['settings', 'a.b'], $error->path);
         self::assertSame('settings.a.b', $error->field);
+    }
+
+    #[Test]
+    public function it_cannot_have_its_field_written(): void
+    {
+        $error = new ValidationError(message: 'Invalid.', code: 'invalid', path: ['email']);
+
+        $this->expectException(Error::class);
+
+        // @mago-expect analysis:invalid-property-write Writing the field is the point of the test
+        $error->field = 'other';
+    }
+
+    #[Test]
+    public function it_cannot_have_its_path_written(): void
+    {
+        $error = new ValidationError(message: 'Invalid.', code: 'invalid', path: ['email']);
+
+        $this->expectException(Error::class);
+
+        // @mago-expect analysis:invalid-property-write Writing the path is the point of the test
+        $error->path = ['other'];
     }
 }

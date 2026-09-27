@@ -6,22 +6,22 @@ namespace Dirthara\Validation;
 
 use function implode;
 
-final readonly class ValidationError
+final class ValidationError
 {
-    public string $field;
+    public string $field {
+        get => implode('.', $this->path);
+    }
 
     /**
      * @param array<string, mixed> $parameters
      * @param list<string|int> $path
      */
     public function __construct(
-        public string $message,
-        public string $code,
-        public array $parameters = [],
-        public array $path = [],
-    ) {
-        $this->field = implode('.', $path);
-    }
+        public readonly string $message,
+        public readonly string $code,
+        public readonly array $parameters = [],
+        public readonly array $path = [],
+    ) {}
 
     public function prefix(string|int $segment): self
     {
