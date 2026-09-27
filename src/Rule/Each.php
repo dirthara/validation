@@ -7,7 +7,6 @@ namespace Dirthara\Validation\Rule;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Internal\RuleSet;
-use Dirthara\Validation\Contract\Validator;
 
 use function is_iterable;
 
@@ -16,9 +15,9 @@ final readonly class Each implements Rule
     private RuleSet $rules;
 
     /**
-     * @param Rule|Validator|list<Rule|Validator> $rules
+     * @param Rule|list<Rule> $rules
      */
-    public function __construct(Rule|Validator|array $rules)
+    public function __construct(Rule|array $rules)
     {
         $this->rules = RuleSet::from($rules);
     }

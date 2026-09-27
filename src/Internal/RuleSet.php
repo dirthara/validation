@@ -6,7 +6,6 @@ namespace Dirthara\Validation\Internal;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Contract\Validator;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_array;
@@ -27,9 +26,9 @@ final readonly class RuleSet
     ) {}
 
     /**
-     * @param Rule|Validator|list<Rule|Validator> $rules
+     * @param Rule|list<Rule> $rules
      */
-    public static function from(Rule|Validator|array $rules): self
+    public static function from(Rule|array $rules): self
     {
         if (!is_array($rules)) {
             return new self([self::rule($rules)]);
@@ -52,18 +51,10 @@ final readonly class RuleSet
         return $errors;
     }
 
-    /**
-     * A nested validator becomes a rule, so the set only ever holds rules. The list type of from() is only a docblock,
-     * so anything else is rejected here.
-     */
     private static function rule(mixed $rule): Rule
     {
         if ($rule instanceof Rule) {
             return $rule;
-        }
-
-        if ($rule instanceof Validator) {
-            return new NestedValidator($rule);
         }
 
         throw InvalidRuleException::notARule($rule);

@@ -8,6 +8,7 @@ use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Rule\Email;
+use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
@@ -80,7 +81,7 @@ final class EachTest extends TestCase
     #[Test]
     public function it_validates_each_item_with_a_nested_validator(): void
     {
-        $each = new Each(new ValidatorFactory()->create(['email' => [new RequiredRule(), new Email()]]));
+        $each = new Each(new Nested(new ValidatorFactory()->create(['email' => [new RequiredRule(), new Email()]])));
 
         $errors = $each->validate([['email' => 'a@example.com'], ['email' => 'invalid'], [], 'not an array', null]);
 
@@ -99,7 +100,7 @@ final class EachTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_a_rule_that_is_neither_a_rule_nor_a_validator(): void
+    public function it_rejects_an_entry_that_is_not_a_rule(): void
     {
         $this->expectException(InvalidRuleException::class);
 

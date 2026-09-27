@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
+use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Internal\RuleSet;
@@ -70,7 +71,7 @@ final class ValidatorTest extends TestCase
     public function it_nests_the_field_names_of_nested_rules(): void
     {
         $address = new Validator(['email' => RuleSet::from(new Email())]);
-        $validator = new Validator(['contacts' => RuleSet::from(new Each($address))]);
+        $validator = new Validator(['contacts' => RuleSet::from(new Each(new Nested($address)))]);
 
         self::assertEquals(
             [new ValidationError(

@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
+use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
@@ -21,7 +22,7 @@ final class ValidatorFactoryTest extends TestCase
         $validator = new ValidatorFactory()->create([
             'name' => new RequiredRule(),
             'email' => [new RequiredRule(), new Email()],
-            'address' => new ValidatorFactory()->create(['email' => new Email()]),
+            'address' => new Nested(new ValidatorFactory()->create(['email' => new Email()])),
         ]);
 
         self::assertInstanceOf(Validator::class, $validator);
@@ -40,7 +41,7 @@ final class ValidatorFactoryTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_a_field_rule_that_is_neither_a_rule_nor_a_validator(): void
+    public function it_rejects_a_field_rule_that_is_not_a_rule(): void
     {
         try {
             // @mago-expect analysis:possibly-invalid-argument -- the invalid rule is the point of the test

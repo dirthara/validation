@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Internal;
 use stdClass;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Email;
+use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Internal\RuleSet;
@@ -27,9 +28,9 @@ final class RuleSetTest extends TestCase
     }
 
     #[Test]
-    public function it_validates_with_a_single_validator_as_a_nested_rule(): void
+    public function it_validates_with_a_single_nested_rule(): void
     {
-        $rules = RuleSet::from(new ValidatorFactory()->create(['email' => new Email()]));
+        $rules = RuleSet::from(new Nested(new ValidatorFactory()->create(['email' => new Email()])));
 
         self::assertEquals(
             [new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email')],
@@ -48,7 +49,7 @@ final class RuleSetTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_an_entry_that_is_neither_a_rule_nor_a_validator(): void
+    public function it_rejects_an_entry_that_is_not_a_rule(): void
     {
         $entry = new stdClass();
 
@@ -60,6 +61,15 @@ final class RuleSetTest extends TestCase
             self::assertSame('Rule "stdClass" is not a valid rule.', $exception->getMessage());
             self::assertSame(['rule' => $entry], $exception->context);
         }
+    }
+
+    #[Test]
+    public function it_rejects_a_validator_that_is_not_wrapped_in_a_nested_rule(): void
+    {
+        $this->expectException(InvalidRuleException::class);
+
+        // @mago-expect analysis:possibly-invalid-argument An unwrapped validator is the point of the test
+        RuleSet::from([new ValidatorFactory()->create([])]);
     }
 
     #[Test]
@@ -90,9 +100,12 @@ final class RuleSetTest extends TestCase
     }
 
     #[Test]
-    public function it_runs_a_nested_validator_in_order_with_its_rules(): void
+    public function it_runs_a_nested_rule_in_order_with_the_others(): void
     {
-        $rules = RuleSet::from([new FailingRule(), new ValidatorFactory()->create(['email' => new Email()])]);
+        $rules = RuleSet::from([
+            new FailingRule(),
+            new Nested(new ValidatorFactory()->create(['email' => new Email()])),
+        ]);
 
         self::assertEquals(
             [

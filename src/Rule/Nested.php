@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Internal;
+namespace Dirthara\Validation\Rule;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
@@ -10,10 +10,7 @@ use Dirthara\Validation\Contract\Validator;
 
 use function is_array;
 
-/**
- * @internal
- */
-final readonly class NestedValidator implements Rule
+final readonly class Nested implements Rule
 {
     public function __construct(
         private Validator $validator,
