@@ -30,4 +30,11 @@ final class NullableTest extends TestCase
         self::assertSame([], new Nullable()->validate('value'));
         self::assertSame([], new Nullable()->validate(null));
     }
+
+    #[Test]
+    public function it_has_a_default_message(): void
+    {
+        self::assertSame('{input} may be null', new Nullable()->message);
+        self::assertSame('{input} is wrong', new Nullable(message: '{input} is wrong')->message);
+    }
 }

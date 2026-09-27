@@ -10,6 +10,10 @@ use Dirthara\Validation\Contract\ValidatesMissing;
 
 final readonly class Present implements ValidatesMissing
 {
+    public function __construct(
+        public string $message = '{input} must be present',
+    ) {}
+
     /**
      * @return list<ValidationError>
      */
@@ -19,6 +23,6 @@ final readonly class Present implements ValidatesMissing
             return [];
         }
 
-        return [new ValidationError(message: 'The value must be present.', code: 'present')];
+        return [new ValidationError(messageKey: $this->message)];
     }
 }

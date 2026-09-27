@@ -25,7 +25,7 @@ final class RuleSetTest extends TestCase
     public function it_validates_with_a_single_rule(): void
     {
         self::assertEquals(
-            [new ValidationError(message: 'The value failed.', code: 'failing')],
+            [new ValidationError(messageKey: '{input} failed')],
             RuleSet::from(new FailingRule())->validate('value'),
         );
     }
@@ -36,13 +36,10 @@ final class RuleSetTest extends TestCase
         $rules = RuleSet::from(new Nested(new ValidatorFactory()->create(['email' => new Email()])));
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: ['email'])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
             $rules->validate(['email' => 'invalid']),
         );
-        self::assertEquals(
-            [new ValidationError(message: 'The value must be an array.', code: 'array')],
-            $rules->validate('invalid'),
-        );
+        self::assertEquals([new ValidationError(messageKey: '{input} must be an array')], $rules->validate('invalid'));
     }
 
     #[Test]
@@ -81,11 +78,11 @@ final class RuleSetTest extends TestCase
         $rules = RuleSet::from([new Email(), new FailingRule('first'), new FailingRule('second')]);
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(messageKey: '{input} must be a valid email address')],
             $rules->validate('invalid'),
         );
         self::assertEquals(
-            [new ValidationError(message: 'The value failed.', code: 'failing', path: ['first'])],
+            [new ValidationError(messageKey: '{input} failed', path: ['first'])],
             $rules->validate('a@example.com'),
         );
     }
@@ -100,7 +97,7 @@ final class RuleSetTest extends TestCase
     public function it_passes_null_to_every_rule(): void
     {
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(messageKey: '{input} must be a valid email address')],
             RuleSet::from(new Email())->validate(null),
         );
     }
@@ -110,14 +107,8 @@ final class RuleSetTest extends TestCase
     {
         $rules = RuleSet::from([new FailingRule(), new Required(), new Email()]);
 
-        self::assertEquals(
-            [new ValidationError(message: 'The value is required.', code: 'required')],
-            $rules->validate(Missing::Value),
-        );
-        self::assertEquals(
-            [new ValidationError(message: 'The value failed.', code: 'failing')],
-            $rules->validate('a@example.com'),
-        );
+        self::assertEquals([new ValidationError(messageKey: '{input} is required')], $rules->validate(Missing::Value));
+        self::assertEquals([new ValidationError(messageKey: '{input} failed')], $rules->validate('a@example.com'));
     }
 
     #[Test]
@@ -126,7 +117,7 @@ final class RuleSetTest extends TestCase
         $rules = RuleSet::from([new Email(), new Present(), new Required()]);
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be present.', code: 'present')],
+            [new ValidationError(messageKey: '{input} must be present')],
             $rules->validate(Missing::Value),
         );
     }
@@ -144,7 +135,7 @@ final class RuleSetTest extends TestCase
         $rules = RuleSet::from([new Nullable(), new Email()]);
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(messageKey: '{input} must be a valid email address')],
             $rules->validate('invalid'),
         );
         self::assertSame([], $rules->validate(Missing::Value));
@@ -159,7 +150,7 @@ final class RuleSetTest extends TestCase
         ]);
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: ['email'])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
             $rules->validate(['email' => 'invalid']),
         );
     }

@@ -31,9 +31,24 @@ final class RequiredTest extends TestCase
     #[Test]
     public function it_rejects_a_missing_value_and_null(): void
     {
-        $required = [new ValidationError(message: 'The value is required.', code: 'required')];
+        $required = [new ValidationError(messageKey: '{input} is required')];
 
         self::assertEquals($required, new Required()->validate(Missing::Value));
         self::assertEquals($required, new Required()->validate(null));
+    }
+
+    #[Test]
+    public function it_has_a_default_message(): void
+    {
+        self::assertSame('{input} is required', new Required()->message);
+    }
+
+    #[Test]
+    public function it_uses_a_custom_message_for_its_error(): void
+    {
+        $rule = new Required(message: '{input} is wrong');
+
+        self::assertSame('{input} is wrong', $rule->message);
+        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate(null));
     }
 }

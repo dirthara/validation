@@ -20,7 +20,7 @@ final class NestedTest extends TestCase
 
         self::assertSame([], $rule->validate(['email' => 'a@example.com']));
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: ['email'])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
             $rule->validate(['email' => 'invalid']),
         );
     }
@@ -31,8 +31,23 @@ final class NestedTest extends TestCase
         $rule = new Nested(new ValidatorFactory()->create(['email' => new Email()]));
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be an array.', code: 'array')],
+            [new ValidationError(messageKey: '{input} must be an array')],
             $rule->validate('a@example.com'),
         );
+    }
+
+    #[Test]
+    public function it_has_a_default_message(): void
+    {
+        self::assertSame('{input} must be an array', new Nested(new ValidatorFactory()->create([]))->message);
+    }
+
+    #[Test]
+    public function it_uses_a_custom_message_for_its_error(): void
+    {
+        $rule = new Nested(new ValidatorFactory()->create([]), message: '{input} is wrong');
+
+        self::assertSame('{input} is wrong', $rule->message);
+        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
     }
 }

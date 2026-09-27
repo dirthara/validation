@@ -8,6 +8,8 @@ use Dirthara\Validation\ValidationError;
 
 interface Rule
 {
+    public string $message { get; }
+
     /**
      * @return list<ValidationError>
      */

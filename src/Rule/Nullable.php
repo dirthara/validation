@@ -9,6 +9,10 @@ use Dirthara\Validation\Contract\AcceptsValue;
 
 final readonly class Nullable implements AcceptsValue
 {
+    public function __construct(
+        public string $message = '{input} may be null',
+    ) {}
+
     public function accepts(mixed $value): bool
     {
         return $value === null;

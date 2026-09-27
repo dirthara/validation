@@ -14,6 +14,10 @@ use const FILTER_VALIDATE_EMAIL;
 
 final readonly class Email implements Rule
 {
+    public function __construct(
+        public string $message = '{input} must be a valid email address',
+    ) {}
+
     /**
      * @return list<ValidationError>
      */
@@ -23,8 +27,6 @@ final readonly class Email implements Rule
             return [];
         }
 
-        return [
-            new ValidationError(message: 'The value must be a valid email address.', code: 'email'),
-        ];
+        return [new ValidationError(messageKey: $this->message)];
     }
 }

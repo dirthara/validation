@@ -11,6 +11,7 @@ final readonly class FailingRule implements Rule
 {
     public function __construct(
         private string $field = '',
+        public string $message = '{input} failed',
     ) {}
 
     /**
@@ -18,10 +19,6 @@ final readonly class FailingRule implements Rule
      */
     public function validate(mixed $value): array
     {
-        return [new ValidationError(
-            message: 'The value failed.',
-            code: 'failing',
-            path: $this->field === '' ? [] : [$this->field],
-        )];
+        return [new ValidationError(messageKey: $this->message, path: $this->field === '' ? [] : [$this->field])];
     }
 }

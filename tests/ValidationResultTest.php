@@ -14,7 +14,7 @@ final class ValidationResultTest extends TestCase
     #[Test]
     public function it_carries_its_errors(): void
     {
-        $errors = [new ValidationError(message: 'Invalid.', code: 'invalid', path: ['email'])];
+        $errors = [new ValidationError(messageKey: 'Invalid.', path: ['email'])];
 
         self::assertSame($errors, new ValidationResult($errors)->errors);
         self::assertSame([], new ValidationResult([])->errors);
@@ -32,7 +32,7 @@ final class ValidationResultTest extends TestCase
     #[Test]
     public function it_fails_with_errors(): void
     {
-        $result = new ValidationResult([new ValidationError(message: 'Invalid.', code: 'invalid', path: ['email'])]);
+        $result = new ValidationResult([new ValidationError(messageKey: 'Invalid.', path: ['email'])]);
 
         self::assertFalse($result->valid());
         self::assertTrue($result->failed());
@@ -41,9 +41,9 @@ final class ValidationResultTest extends TestCase
     #[Test]
     public function it_groups_its_errors_by_field(): void
     {
-        $email = new ValidationError(message: 'Invalid.', code: 'email', path: ['email']);
-        $required = new ValidationError(message: 'Required.', code: 'required', path: ['users', 0, 'name']);
-        $other = new ValidationError(message: 'Invalid.', code: 'other', path: ['email']);
+        $email = new ValidationError(messageKey: 'Invalid.', path: ['email']);
+        $required = new ValidationError(messageKey: 'Required.', path: ['users', 0, 'name']);
+        $other = new ValidationError(messageKey: 'Invalid.', path: ['email']);
 
         self::assertSame(
             ['email' => [$email, $other], 'users.0.name' => [$required]],

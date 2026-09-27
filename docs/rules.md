@@ -9,16 +9,17 @@ description: The rules Dirthara Validation ships, and how to write your own.
 
 All rules live in `Dirthara\Validation\Rule`.
 
-| Rule                         | Passes when                                              | Error code |
-|------------------------------|----------------------------------------------------------|------------|
-| `Required`                   | The value is present and not `null`.                     | `required` |
-| `Present`                    | The value is present, even when it is `null`.            | `present`  |
-| `Nullable`                   | Never fails. Makes the field pass for `null`.            |            |
-| `Email`                      | The value is a string that is a valid email address.     | `email`    |
-| `Each(Rule\|list<Rule>)`     | The value is iterable and every item passes the rules.   | `iterable` |
-| `Nested(Validator)`          | The value is an array that passes the nested validator.  | `array`    |
+| Rule                         | Passes when                                              | Default message                           |
+|------------------------------|----------------------------------------------------------|-------------------------------------------|
+| `Required`                   | The value is present and not `null`.                     | `{input} is required`                     |
+| `Present`                    | The value is present, even when it is `null`.            | `{input} must be present`                 |
+| `Nullable`                   | Never fails. Makes the field pass for `null`.            | `{input} may be null`                     |
+| `Email`                      | The value is a string that is a valid email address.     | `{input} must be a valid email address`   |
+| `Each(Rule\|list<Rule>)`     | The value is iterable and every item passes the rules.   | `{input} must be iterable`                |
+| `Nested(Validator)`          | The value is an array that passes the nested validator.  | `{input} must be an array`                |
 
-The error code in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
+Every rule takes a `message` argument that replaces its default, as in `new Email(message: '{input} is not an email')`.
+The message in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
 they contain. See [missing and null values](validating-input.md#missing-and-null-values) for how `Required`,
 `Present`, and `Nullable` combine.
 
@@ -63,6 +64,10 @@ A rule implements `Dirthara\Validation\Contract\Rule` and returns a list of erro
 passes. It never receives a missing value, but it does receive `null`, which it should reject unless `null` is valid
 for it. Users accept `null` for a field by adding `Nullable` to its rules.
 
+Every rule also exposes its message as a `message` property, which the `Rule` contract declares. Use it as the
+`messageKey` of the errors the rule reports, and take it as a constructor argument with your default, so users can
+replace it.
+
 ```php
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
@@ -70,23 +75,23 @@ use Dirthara\Validation\ValidationError;
 final readonly class MinLength implements Rule
 {
     public function __construct(
-        private int $min,
+        private int $minimum,
+        public string $message = '{input} must be at least {minimum} characters',
     ) {}
 
     public function validate(mixed $value): array
     {
-        if (is_string($value) && mb_strlen($value) >= $this->min) {
+        if (is_string($value) && mb_strlen($value) >= $this->minimum) {
             return [];
         }
 
-        return [new ValidationError(
-            message: sprintf('The value must be at least %d characters.', $this->min),
-            code: 'min_length',
-            parameters: ['min' => $this->min],
-        )];
+        return [new ValidationError(messageKey: $this->message, parameters: ['minimum' => $this->minimum])];
     }
 }
 ```
+
+The message is plain English with placeholders in braces. `{input}` is filled in with the field, and every other
+placeholder with the parameter of the same name. See [messages and translation](results-and-errors.md#messages-and-translation).
 
 Leave the path of the error empty. The validator adds the field, and `Each` and `Nested` add their keys, on the way
 back up.
@@ -106,6 +111,7 @@ final readonly class RequiredWhen implements ValidatesMissing
 {
     public function __construct(
         private bool $condition,
+        public string $message = '{input} is required',
     ) {}
 
     public function validate(mixed $value): array
@@ -114,7 +120,7 @@ final readonly class RequiredWhen implements ValidatesMissing
             return [];
         }
 
-        return [new ValidationError(message: 'The value is required.', code: 'required')];
+        return [new ValidationError(messageKey: $this->message)];
     }
 }
 ```
@@ -131,6 +137,10 @@ use Dirthara\Validation\Contract\AcceptsValue;
 
 final readonly class AllowEmptyString implements AcceptsValue
 {
+    public function __construct(
+        public string $message = '{input} may be empty',
+    ) {}
+
     public function accepts(mixed $value): bool
     {
         return $value === '';

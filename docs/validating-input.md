@@ -42,10 +42,10 @@ running any of its other rules. Where `Nullable` stands in the list does not mat
 
 | Rules                                           | Missing                  | `null`                   |
 |-------------------------------------------------|--------------------------|--------------------------|
-| `new Email()`                                   | Passes                   | Fails with `email`       |
+| `new Email()`                                   | Passes                   | Fails (`Email`)          |
 | `[new Nullable(), new Email()]`                 | Passes                   | Passes                   |
-| `[new Required(), new Email()]`                 | Fails with `required`    | Fails with `required`    |
-| `[new Present(), new Nullable(), new Email()]`  | Fails with `present`     | Passes                   |
+| `[new Required(), new Email()]`                 | Fails (`Required`)       | Fails (`Required`)       |
+| `[new Present(), new Nullable(), new Email()]`  | Fails (`Present`)        | Passes                   |
 
 Any other value is checked by `Email` in every row. The last row is a field that has to be sent, but may be `null`, such
 as a value a client clears on purpose.

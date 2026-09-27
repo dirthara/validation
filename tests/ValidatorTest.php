@@ -39,16 +39,8 @@ final class ValidatorTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(
-                    message: 'The value must be a valid email address.',
-                    code: 'email',
-                    path: ['email'],
-                ),
-                new ValidationError(
-                    message: 'The value must be a valid email address.',
-                    code: 'email',
-                    path: ['backup'],
-                ),
+                new ValidationError(messageKey: '{input} must be a valid email address', path: ['email']),
+                new ValidationError(messageKey: '{input} must be a valid email address', path: ['backup']),
             ],
             $validator->validate(['email' => 'invalid', 'backup' => 'also invalid'])->errors,
         );
@@ -65,19 +57,15 @@ final class ValidatorTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(message: 'The value is required.', code: 'required', path: ['name']),
-                new ValidationError(message: 'The value must be present.', code: 'present', path: ['deleted_at']),
+                new ValidationError(messageKey: '{input} is required', path: ['name']),
+                new ValidationError(messageKey: '{input} must be present', path: ['deleted_at']),
             ],
             $validator->validate([])->errors,
         );
         self::assertEquals(
             [
-                new ValidationError(message: 'The value is required.', code: 'required', path: ['name']),
-                new ValidationError(
-                    message: 'The value must be a valid email address.',
-                    code: 'email',
-                    path: ['nickname'],
-                ),
+                new ValidationError(messageKey: '{input} is required', path: ['name']),
+                new ValidationError(messageKey: '{input} must be a valid email address', path: ['nickname']),
             ],
             $validator->validate(['name' => null, 'deleted_at' => null, 'nickname' => null])->errors,
         );
@@ -107,12 +95,24 @@ final class ValidatorTest extends TestCase
         $validator = new Validator(['contacts' => RuleSet::from(new Each(new Nested($address)))]);
 
         self::assertEquals(
-            [new ValidationError(
-                message: 'The value must be a valid email address.',
-                code: 'email',
-                path: ['contacts', 1, 'email'],
-            )],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: ['contacts', 1, 'email'])],
             $validator->validate(['contacts' => [['email' => 'a@example.com'], ['email' => 'invalid']]])->errors,
         );
+    }
+
+    #[Test]
+    public function it_renders_messages_with_the_path_of_the_field(): void
+    {
+        $validator = new ValidatorFactory()->create([
+            'email' => [new Required(), new Email()],
+            'contacts' => new Each(new Nested(new ValidatorFactory()->create(['email' => new Email()]))),
+        ]);
+
+        $errors = $validator->validate(['contacts' => [['email' => 'invalid']]])->errors;
+
+        self::assertSame('{input} is required', $errors[0]->messageKey);
+        self::assertSame('email is required', $errors[0]->message);
+        self::assertSame('{input} must be a valid email address', $errors[1]->messageKey);
+        self::assertSame('contacts.0.email must be a valid email address', $errors[1]->message);
     }
 }

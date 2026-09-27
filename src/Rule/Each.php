@@ -19,8 +19,10 @@ final readonly class Each implements Rule
     /**
      * @param Rule|list<Rule> $rules
      */
-    public function __construct(Rule|array $rules)
-    {
+    public function __construct(
+        Rule|array $rules,
+        public string $message = '{input} must be iterable',
+    ) {
         $this->rules = RuleSet::from($rules);
     }
 
@@ -30,9 +32,7 @@ final readonly class Each implements Rule
     public function validate(mixed $value): array
     {
         if (!is_iterable($value)) {
-            return [
-                new ValidationError(message: 'The value must be iterable.', code: 'iterable'),
-            ];
+            return [new ValidationError(messageKey: $this->message)];
         }
 
         $errors = [];

@@ -45,9 +45,9 @@ final class ValidationFailedExceptionTest extends TestCase
     public function it_names_the_fields_that_failed_without_their_values(): void
     {
         $result = new ValidationResult([
-            new ValidationError(message: 'Invalid.', code: 'email', path: ['email']),
-            new ValidationError(message: 'Required.', code: 'required', path: ['users', 0, 'name']),
-            new ValidationError(message: 'Invalid.', code: 'other', path: ['email']),
+            new ValidationError(messageKey: 'Invalid.', path: ['email']),
+            new ValidationError(messageKey: 'Required.', path: ['users', 0, 'name']),
+            new ValidationError(messageKey: 'Invalid.', path: ['email']),
         ]);
 
         $exception = ValidationFailedException::forResult($result);
@@ -60,7 +60,7 @@ final class ValidationFailedExceptionTest extends TestCase
     #[Test]
     public function it_names_a_single_field_and_escapes_control_characters(): void
     {
-        $result = new ValidationResult([new ValidationError(message: 'Invalid.', code: 'email', path: ["e\nmail"])]);
+        $result = new ValidationResult([new ValidationError(messageKey: 'Invalid.', path: ["e\nmail"])]);
 
         $exception = ValidationFailedException::forResult($result);
 
@@ -71,7 +71,7 @@ final class ValidationFailedExceptionTest extends TestCase
     #[Test]
     public function it_names_a_field_with_an_integer_key_as_a_string(): void
     {
-        $result = new ValidationResult([new ValidationError(message: 'Invalid.', code: 'email', path: [0])]);
+        $result = new ValidationResult([new ValidationError(messageKey: 'Invalid.', path: [0])]);
 
         self::assertSame(['fields' => ['0']], ValidationFailedException::forResult($result)->context);
     }

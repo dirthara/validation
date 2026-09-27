@@ -31,7 +31,7 @@ final class EachTest extends TestCase
     public function it_rejects_a_value_that_is_not_iterable(): void
     {
         self::assertEquals(
-            [new ValidationError(message: 'The value must be iterable.', code: 'iterable')],
+            [new ValidationError(messageKey: '{input} must be iterable')],
             new Each(new Email())->validate('a@example.com'),
         );
     }
@@ -43,8 +43,8 @@ final class EachTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [0]),
-                new ValidationError(message: 'The value failed.', code: 'failing', path: ['first', 'inner']),
+                new ValidationError(messageKey: '{input} must be a valid email address', path: [0]),
+                new ValidationError(messageKey: '{input} failed', path: ['first', 'inner']),
             ],
             $errors,
         );
@@ -56,7 +56,7 @@ final class EachTest extends TestCase
         $errors = new Each(new Email())->validate(new ArrayIterator(['a@example.com', 'invalid']));
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
             $errors,
         );
     }
@@ -70,7 +70,7 @@ final class EachTest extends TestCase
         })();
 
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
             new Each(new Email())->validate($items),
         );
     }
@@ -79,7 +79,7 @@ final class EachTest extends TestCase
     public function it_passes_a_null_item_to_its_rules(): void
     {
         self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
+            [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
             new Each(new Email())->validate(['a@example.com', null]),
         );
         self::assertSame([], new Each([new Nullable(), new Email()])->validate(['a@example.com', null]));
@@ -94,14 +94,10 @@ final class EachTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(
-                    message: 'The value must be a valid email address.',
-                    code: 'email',
-                    path: [1, 'email'],
-                ),
-                new ValidationError(message: 'The value is required.', code: 'required', path: [2, 'email']),
-                new ValidationError(message: 'The value must be an array.', code: 'array', path: [3]),
-                new ValidationError(message: 'The value must be an array.', code: 'array', path: [4]),
+                new ValidationError(messageKey: '{input} must be a valid email address', path: [1, 'email']),
+                new ValidationError(messageKey: '{input} is required', path: [2, 'email']),
+                new ValidationError(messageKey: '{input} must be an array', path: [3]),
+                new ValidationError(messageKey: '{input} must be an array', path: [4]),
             ],
             $errors,
         );
@@ -114,5 +110,20 @@ final class EachTest extends TestCase
 
         // @mago-expect analysis:possibly-invalid-argument The invalid rule is the point of the test
         new Each([new Email(), 'required']);
+    }
+
+    #[Test]
+    public function it_has_a_default_message(): void
+    {
+        self::assertSame('{input} must be iterable', new Each(new Email())->message);
+    }
+
+    #[Test]
+    public function it_uses_a_custom_message_for_its_error(): void
+    {
+        $rule = new Each(new Email(), message: '{input} is wrong');
+
+        self::assertSame('{input} is wrong', $rule->message);
+        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
     }
 }

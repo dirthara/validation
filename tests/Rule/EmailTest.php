@@ -38,9 +38,21 @@ final class EmailTest extends TestCase
     {
         $errors = new Email()->validate($value);
 
-        self::assertEquals(
-            [new ValidationError(message: 'The value must be a valid email address.', code: 'email')],
-            $errors,
-        );
+        self::assertEquals([new ValidationError(messageKey: '{input} must be a valid email address')], $errors);
+    }
+
+    #[Test]
+    public function it_has_a_default_message(): void
+    {
+        self::assertSame('{input} must be a valid email address', new Email()->message);
+    }
+
+    #[Test]
+    public function it_uses_a_custom_message_for_its_error(): void
+    {
+        $rule = new Email(message: '{input} is wrong');
+
+        self::assertSame('{input} is wrong', $rule->message);
+        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
     }
 }

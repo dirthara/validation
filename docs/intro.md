@@ -32,7 +32,7 @@ $result = $validator->validate([
 
 $result->valid();              // false
 $result->errors[0]->field;     // 'contacts.1.email'
-$result->errors[0]->code;      // 'email'
+$result->errors[0]->message;   // 'contacts.1.email must be a valid email address'
 ```
 
 - [Validating input](validating-input.md) covers the factory, rules per field, and how missing values are handled.

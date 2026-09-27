@@ -14,6 +14,7 @@ final readonly class Nested implements Rule
 {
     public function __construct(
         private Validator $validator,
+        public string $message = '{input} must be an array',
     ) {}
 
     /**
@@ -22,7 +23,7 @@ final readonly class Nested implements Rule
     public function validate(mixed $value): array
     {
         if (!is_array($value)) {
-            return [new ValidationError(message: 'The value must be an array.', code: 'array')];
+            return [new ValidationError(messageKey: $this->message)];
         }
 
         return $this->validator->validate($value)->errors;

@@ -10,6 +10,10 @@ use Dirthara\Validation\Contract\ValidatesMissing;
 
 final readonly class Required implements ValidatesMissing
 {
+    public function __construct(
+        public string $message = '{input} is required',
+    ) {}
+
     /**
      * @return list<ValidationError>
      */
@@ -19,6 +23,6 @@ final readonly class Required implements ValidatesMissing
             return [];
         }
 
-        return [new ValidationError(message: 'The value is required.', code: 'required')];
+        return [new ValidationError(messageKey: $this->message)];
     }
 }
