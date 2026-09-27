@@ -43,7 +43,7 @@ final class InvalidRuleExceptionTest extends TestCase
     /**
      * @return iterable<string, array{mixed, string}>
      */
-    public static function invalidRules(): iterable
+    public static function values(): iterable
     {
         yield 'string' => ['required', 'string'];
         yield 'integer' => [42, 'int'];
@@ -53,10 +53,10 @@ final class InvalidRuleExceptionTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('invalidRules')]
+    #[DataProvider('values')]
     public function it_describes_an_invalid_rule_by_its_type(mixed $rule, string $type): void
     {
-        $exception = InvalidRuleException::invalidRule($rule);
+        $exception = InvalidRuleException::notARule($rule);
 
         self::assertSame('Rule "' . $type . '" is not a valid rule.', $exception->getMessage());
         self::assertSame(['rule' => $rule], $exception->context);

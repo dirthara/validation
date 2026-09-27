@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use function sprintf;
 use function get_debug_type;
 
-class InvalidRuleException extends InvalidArgumentException implements ValidationException
+final class InvalidRuleException extends InvalidArgumentException implements ValidationException
 {
     use HasExceptionContext;
 
@@ -24,9 +24,9 @@ class InvalidRuleException extends InvalidArgumentException implements Validatio
         $this->context = $context;
     }
 
-    public static function invalidRule(mixed $rule): self
+    public static function notARule(mixed $rule): self
     {
-        return new self(sprintf('Rule "%s" is not a valid rule.', get_debug_type($rule)))->addContext([
+        return new self(message: sprintf('Rule "%s" is not a valid rule.', get_debug_type($rule)), context: [
             'rule' => $rule,
         ]);
     }

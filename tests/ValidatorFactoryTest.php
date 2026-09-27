@@ -42,9 +42,13 @@ final class ValidatorFactoryTest extends TestCase
     #[Test]
     public function it_rejects_a_field_rule_that_is_neither_a_rule_nor_a_validator(): void
     {
-        $this->expectException(InvalidRuleException::class);
-
-        // @mago-expect analysis:possibly-invalid-argument -- the invalid rule is the point of the test
-        new ValidatorFactory()->create(['email' => [new Email(), 'required']]);
+        try {
+            // @mago-expect analysis:possibly-invalid-argument -- the invalid rule is the point of the test
+            new ValidatorFactory()->create(['name' => new Email(), 'email' => [new Email(), 'required']]);
+            self::fail('Expected an InvalidRuleException.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame('Rule "string" is not a valid rule.', $exception->getMessage());
+            self::assertSame(['rule' => 'required', 'field' => 'email'], $exception->context);
+        }
     }
 }

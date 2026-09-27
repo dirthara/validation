@@ -6,9 +6,8 @@ namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\Internal\RuleSet;
+use Dirthara\Validation\Exception\InvalidRuleException;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
-
-use function array_map;
 
 final readonly class ValidatorFactory
 {
@@ -17,7 +16,15 @@ final readonly class ValidatorFactory
      */
     public function create(array $rules): ValidatorContract
     {
-        $ruleSets = array_map(RuleSet::from(...), $rules);
+        $ruleSets = [];
+
+        foreach ($rules as $field => $fieldRules) {
+            try {
+                $ruleSets[$field] = RuleSet::from($fieldRules);
+            } catch (InvalidRuleException $exception) {
+                throw $exception->addContext(['field' => $field]);
+            }
+        }
 
         return new Validator($ruleSets);
     }

@@ -66,6 +66,6 @@ final readonly class RuleSet
             return new NestedValidator($rule);
         }
 
-        throw InvalidRuleException::invalidRule($rule);
+        throw InvalidRuleException::notARule($rule);
     }
 }
