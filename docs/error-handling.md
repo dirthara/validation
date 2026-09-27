@@ -11,7 +11,7 @@ array with the details of the failure, and `addContext()` adds to it.
 
 | Exception                    | Extends                     | Thrown when                                              |
 |------------------------------|-----------------------------|----------------------------------------------------------|
-| `InvalidRuleException`       | `InvalidArgumentException`  | A validator is created with something that is not a rule. |
+| `InvalidRuleException`       | `InvalidArgumentException`  | A validator or rule is configured with something invalid. |
 | `ValidationFailedException`  | `RuntimeException`          | You throw it for a failed result.                        |
 
 ## Invalid rules
@@ -27,6 +27,13 @@ try {
     $exception->context;        // ['rule' => 'required', 'field' => 'email']
 }
 ```
+
+Rules that take arguments check them when they are created:
+
+| Rule                  | Throws when                                     | Context                  |
+|-----------------------|-------------------------------------------------|--------------------------|
+| `Regex`               | The pattern is not a valid regular expression.  | `pattern`                |
+| `Between`             | The minimum is greater than the maximum.        | `minimum`, `maximum`     |
 
 ## Failed validation
 

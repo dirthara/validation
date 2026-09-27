@@ -96,9 +96,13 @@ they contain. See [missing and null values](validating-input.md#missing-and-null
 `Present`, and `Nullable` combine.
 
 :::note
-`Email` uses PHP's `FILTER_VALIDATE_EMAIL`, which only accepts ASCII addresses. An internationalised address, such as
-one with a non-ASCII local part, fails.
+`Email` and `Url` use PHP's `FILTER_VALIDATE_EMAIL` and `FILTER_VALIDATE_URL`, which only accept ASCII. An
+internationalised address, such as one with a non-ASCII local part or domain, fails. `Url` accepts any scheme, so check
+the scheme with `Regex` when only some are allowed.
 :::
+
+The length rules count characters, not bytes, so `äöü` is three characters long. A string that is not valid UTF-8 fails
+them.
 
 ## Validate every item of a list
 
