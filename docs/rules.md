@@ -25,6 +25,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `RequiredWithout(string\|int $field)` | The current value exists and is non-null, when the other field is missing or null. | `{input} is required when {other} is not present` |
 | `ProhibitedWith(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is prohibited when {other} is present` |
 | `ProhibitedWithout(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field is missing or null. | `{input} is prohibited when {other} is not present` |
+| `PresentIf(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), when the other field strictly equals the configured value. | `{input} must be present when {other} is {value}` |
 
 ### Type
 
