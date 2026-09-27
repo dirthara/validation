@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
@@ -23,6 +24,7 @@ final class ValidatorFactoryTest extends TestCase
             'address' => new ValidatorFactory()->create(['email' => new Email()]),
         ]);
 
+        self::assertInstanceOf(Validator::class, $validator);
         self::assertEquals(
             [
                 new ValidationError(field: 'name', message: 'The value is required.', code: 'required'),

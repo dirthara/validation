@@ -15,7 +15,7 @@ final readonly class ValidatorFactory
     /**
      * @param array<string, Rule|ValidatorContract|list<Rule|ValidatorContract>> $rules
      */
-    public function create(array $rules): Validator
+    public function create(array $rules): ValidatorContract
     {
         $ruleSets = array_map(RuleSet::from(...), $rules);
 

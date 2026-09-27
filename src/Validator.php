@@ -12,6 +12,10 @@ use function array_key_exists;
 final readonly class Validator implements ValidatorContract
 {
     /**
+     * Create a validator with ValidatorFactory::create().
+     *
+     * @internal
+     *
      * @param array<string, RuleSet> $rules
      */
     public function __construct(
