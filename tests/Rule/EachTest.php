@@ -104,7 +104,7 @@ final class EachTest extends TestCase
     {
         $this->expectException(InvalidRuleException::class);
 
-        // @mago-expect analysis:possibly-invalid-argument -- the invalid rule is the point of the test
+        // @mago-expect analysis:possibly-invalid-argument The invalid rule is the point of the test
         new Each([new Email(), 'required']);
     }
 }

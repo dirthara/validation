@@ -54,7 +54,7 @@ final class RuleSetTest extends TestCase
         $entry = new stdClass();
 
         try {
-            // @mago-expect analysis:possibly-invalid-argument -- the invalid entry is the point of the test
+            // @mago-expect analysis:possibly-invalid-argument The invalid entry is the point of the test
             RuleSet::from([new Email(), $entry]);
             self::fail('Expected an InvalidRuleException.');
         } catch (InvalidRuleException $exception) {
