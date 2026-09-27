@@ -79,6 +79,7 @@ In `Dirthara\Validation\Rule\Comparison`.
 | `Same(string\|int $field)` | The value is identical to the other field's value. | `{input} must be the same as {other}` |
 | `Different(string\|int $field)` | The value is not identical to the other field's value. | `{input} must be different from {other}` |
 | `GreaterThanField(string\|int $field)` | Both values are integers or floats and the current value is greater than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than {other}` |
+| `GreaterThanOrEqualField(string\|int $field)` | Both values are integers or floats and the current value is greater than or equal to the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than or equal to {other}` |
 
 ### Choice
 
