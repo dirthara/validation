@@ -78,6 +78,7 @@ In `Dirthara\Validation\Rule\Comparison`.
 |------|-------------|-----------------|
 | `Same(string\|int $field)` | The value is identical to the other field's value. | `{input} must be the same as {other}` |
 | `Different(string\|int $field)` | The value is not identical to the other field's value. | `{input} must be different from {other}` |
+| `GreaterThanField(string\|int $field)` | Both values are integers or floats and the current value is greater than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than {other}` |
 
 ### Choice
 
@@ -283,7 +284,7 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\SkipsMissing;
 
-final class GreaterThanField implements Rule
+final class GreaterIntegerThanField implements Rule
 {
     use SkipsMissing;
 
