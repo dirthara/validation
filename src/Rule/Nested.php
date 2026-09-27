@@ -25,7 +25,6 @@ final readonly class Nested implements Rule
             return [new ValidationError(message: 'The value must be an array.', code: 'array')];
         }
 
-        // @mago-expect analysis:less-specific-argument The validator looks its fields up by key, so integer keys are harmless
         return $this->validator->validate($value)->errors;
     }
 }

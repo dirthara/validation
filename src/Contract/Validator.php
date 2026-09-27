@@ -9,7 +9,7 @@ use Dirthara\Validation\ValidationResult;
 interface Validator
 {
     /**
-     * @param array<string, mixed> $input
+     * @param array<array-key, mixed> $input
      */
     public function validate(array $input): ValidationResult;
 }

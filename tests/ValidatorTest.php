@@ -13,6 +13,7 @@ use Dirthara\Validation\Rule\Nested;
 use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidatorFactory;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
 final class ValidatorTest extends TestCase
@@ -60,6 +61,14 @@ final class ValidatorTest extends TestCase
         self::assertEquals([$required], $validator->validate([])->errors);
         self::assertEquals([$required], $validator->validate(['name' => null])->errors);
         self::assertSame([], $validator->validate(['name' => 'Ada'])->errors);
+    }
+
+    #[Test]
+    public function it_accepts_input_with_integer_keys(): void
+    {
+        $validator = new ValidatorFactory()->create(['email' => new Email()]);
+
+        self::assertSame([], $validator->validate([0 => 'first', 'email' => 'a@example.com'])->errors);
     }
 
     #[Test]

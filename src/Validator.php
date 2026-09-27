@@ -18,7 +18,7 @@ final readonly class Validator implements ValidatorContract
     ) {}
 
     /**
-     * @param array<string, mixed> $input
+     * @param array<array-key, mixed> $input
      */
     public function validate(array $input): ValidationResult
     {
