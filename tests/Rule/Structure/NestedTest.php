@@ -6,9 +6,9 @@ namespace Dirthara\Validation\Tests\Rule\Structure;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
-use Dirthara\Validation\Rule\String\Email;
 use Dirthara\Validation\Rule\Structure\Nested;
 
 final class NestedTest extends TestCase

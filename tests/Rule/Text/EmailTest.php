@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Tests\Rule\String;
+namespace Dirthara\Validation\Tests\Rule\Text;
 
 use stdClass;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Rule\String\Email;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class EmailTest extends TestCase

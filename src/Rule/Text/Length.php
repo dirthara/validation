@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Rule\String;
+namespace Dirthara\Validation\Rule\Text;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
@@ -10,11 +10,11 @@ use Dirthara\Validation\ValidationError;
 use function is_string;
 use function preg_match_all;
 
-final readonly class MaxLength implements Rule
+final readonly class Length implements Rule
 {
     public function __construct(
-        private int $maximum,
-        public string $message = '{input} must be at most {maximum} characters long',
+        private int $length,
+        public string $message = '{input} must be exactly {length} characters long',
     ) {}
 
     /**
@@ -24,10 +24,10 @@ final readonly class MaxLength implements Rule
     {
         $length = is_string($value) ? preg_match_all('/./su', $value) : false;
 
-        if ($length !== false && $length <= $this->maximum) {
+        if ($length !== false && $length === $this->length) {
             return [];
         }
 
-        return [new ValidationError(messageKey: $this->message, parameters: ['maximum' => $this->maximum])];
+        return [new ValidationError(messageKey: $this->message, parameters: ['length' => $this->length])];
     }
 }

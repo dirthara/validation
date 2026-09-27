@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Rule\String;
+namespace Dirthara\Validation\Rule\Text;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;

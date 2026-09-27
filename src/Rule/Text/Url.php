@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Rule\String;
+namespace Dirthara\Validation\Rule\Text;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
@@ -10,12 +10,12 @@ use Dirthara\Validation\ValidationError;
 use function is_string;
 use function filter_var;
 
-use const FILTER_VALIDATE_EMAIL;
+use const FILTER_VALIDATE_URL;
 
-final readonly class Email implements Rule
+final readonly class Url implements Rule
 {
     public function __construct(
-        public string $message = '{input} must be a valid email address',
+        public string $message = '{input} must be a valid URL',
     ) {}
 
     /**
@@ -23,7 +23,7 @@ final readonly class Email implements Rule
      */
     public function validate(mixed $value): array
     {
-        if (is_string($value) && filter_var($value, FILTER_VALIDATE_EMAIL) !== false) {
+        if (is_string($value) && filter_var($value, FILTER_VALIDATE_URL) !== false) {
             return [];
         }
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Tests\Rule\String;
+namespace Dirthara\Validation\Tests\Rule\Text;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Dirthara\Validation\Rule\Text\Uuid;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Rule\String\Uuid;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UuidTest extends TestCase

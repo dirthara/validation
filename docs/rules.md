@@ -34,9 +34,9 @@ In `Dirthara\Validation\Rule\Type`.
 | `ArrayType` | The value is an array. | `{input} must be an array` |
 | `IterableType` | The value is an array or a `Traversable`. | `{input} must be iterable` |
 
-### String
+### Text
 
-In `Dirthara\Validation\Rule\String`.
+In `Dirthara\Validation\Rule\Text`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|

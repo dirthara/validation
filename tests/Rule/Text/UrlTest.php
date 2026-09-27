@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Tests\Rule\String;
+namespace Dirthara\Validation\Tests\Rule\Text;
 
 use PHPUnit\Framework\TestCase;
+use Dirthara\Validation\Rule\Text\Url;
 use PHPUnit\Framework\Attributes\Test;
-use Dirthara\Validation\Rule\String\Url;
 use Dirthara\Validation\ValidationError;
 use PHPUnit\Framework\Attributes\DataProvider;
 

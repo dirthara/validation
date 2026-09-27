@@ -11,7 +11,7 @@ writing dotted field names.
 
 ```php
 use Dirthara\Validation\Rule\Collection\Each;
-use Dirthara\Validation\Rule\String\Email;
+use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\Rule\Structure\Nested;
 use Dirthara\Validation\Rule\Presence\Required;
 use Dirthara\Validation\ValidatorFactory;
