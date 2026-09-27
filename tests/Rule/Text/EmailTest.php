@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class EmailTest extends TestCase
@@ -16,7 +17,7 @@ final class EmailTest extends TestCase
     #[Test]
     public function it_accepts_a_valid_email_address(): void
     {
-        self::assertSame([], new Email()->validate('user@example.com'));
+        self::assertSame([], new Email()->validate(context: new ValidationContext([]), value: 'user@example.com'));
     }
 
     /**
@@ -36,7 +37,7 @@ final class EmailTest extends TestCase
     #[DataProvider('invalidValues')]
     public function it_rejects_anything_else(mixed $value): void
     {
-        $errors = new Email()->validate($value);
+        $errors = new Email()->validate(context: new ValidationContext([]), value: $value);
 
         self::assertEquals([new ValidationError(messageKey: '{input} must be a valid email address')], $errors);
     }
@@ -53,6 +54,9 @@ final class EmailTest extends TestCase
         $rule = new Email(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'invalid'),
+        );
     }
 }

@@ -170,26 +170,37 @@ $validator = $factory->create([
 
 ## Write your own rule
 
-A rule implements `Dirthara\Validation\Contract\Rule` and returns a list of errors, which is empty when the value
-passes. It never receives a missing value, but it does receive `null`, which it should reject unless `null` is valid
+A rule implements `Dirthara\Validation\Contract\Rule`. Its `validate()` receives the value and a
+`Dirthara\Validation\ValidationContext`, and returns a list of errors, which is empty when the value passes. Most rules
+only look at the value and ignore the context. A rule receives `null`, which it should reject unless `null` is valid
 for it. Users accept `null` for a field by adding `Nullable` to its rules.
 
-Every rule also exposes its message as a `message` property, which the `Rule` contract declares. Use it as the
-`messageKey` of the errors the rule reports, and take it as a constructor argument with your default, so users can
-replace it.
+The contract declares two properties:
+
+| Property           | Type     | Meaning                                                                           |
+|--------------------|----------|-----------------------------------------------------------------------------------|
+| `message`          | `string` | The rule's message, used as the `messageKey` of the errors it reports.            |
+| `validatesMissing` | `bool`   | Whether the rule also runs for a missing field. See [below](#validate-a-missing-value-yourself). |
+
+Take the message as a constructor argument with your default, so users can replace it. The trait
+`Dirthara\Validation\Rule\SkipsMissing` sets `validatesMissing` to `false`, which is what almost every rule wants.
 
 ```php
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Rule\SkipsMissing;
 
-final readonly class MinLength implements Rule
+final class MinLength implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private int $minimum,
-        public string $message = '{input} must be at least {minimum} characters',
+        private readonly int $minimum,
+        public readonly string $message = '{input} must be at least {minimum} characters',
     ) {}
 
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if (is_string($value) && mb_strlen($value) >= $this->minimum) {
             return [];
@@ -200,6 +211,11 @@ final readonly class MinLength implements Rule
 }
 ```
 
+:::note
+The rule classes are `final`, not `final readonly`, because PHP does not allow a property hook such as the one in
+`SkipsMissing` in a readonly class. Declare each property `readonly` instead.
+:::
+
 The message is plain English with placeholders in braces. `{input}` is filled in with the field, and every other
 placeholder with the parameter of the same name. See [messages and translation](results-and-errors.md#messages-and-translation).
 
@@ -208,24 +224,27 @@ back up.
 
 ## Validate a missing value yourself
 
-A rule that has to decide what a missing value means also implements the marker interface
-`Dirthara\Validation\Contract\ValidatesMissing`. It then also runs for a missing field, in its place among the other
-rules, and receives `Dirthara\Validation\Missing::Value` as the value.
+A rule that has to decide what a missing value means sets `validatesMissing` to `true`. It then also runs for a missing
+field, in its place among the other rules, and receives `Dirthara\Validation\Missing::Value` as the value.
 
 ```php
 use Dirthara\Validation\Missing;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Contract\ValidatesMissing;
+use Dirthara\Validation\ValidationContext;
 
-final readonly class RequiredWhen implements Rule, ValidatesMissing
+final class RequiredWhen implements Rule
 {
+    public bool $validatesMissing {
+        get => true;
+    }
+
     public function __construct(
-        private bool $condition,
-        public string $message = '{input} is required',
+        private readonly bool $condition,
+        public readonly string $message = '{input} is required',
     ) {}
 
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if (!$this->condition || !$value instanceof Missing) {
             return [];
@@ -236,22 +255,25 @@ final readonly class RequiredWhen implements Rule, ValidatesMissing
 }
 ```
 
-## Read other fields yourself
+## Read other fields
 
-A rule that needs other fields implements `Dirthara\Validation\Contract\ContextualRule` instead of `Rule`. Its
-`validate()` receives the value and a `Dirthara\Validation\ValidationContext` for the input the field belongs to.
-`has()` tells whether a key is present, and `value()` returns its value, or `Missing::Value` when it is not.
+The context holds the input the field belongs to. `has()` tells whether a key is present, and `value()` returns its
+value, or `Missing::Value` when it is not. Keys are literal, and inside a `Nested` validator the context is the nested
+array.
 
 ```php
+use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
+use Dirthara\Validation\Rule\SkipsMissing;
 
-final readonly class GreaterThanField implements ContextualRule
+final class GreaterThanField implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private string $field,
-        public string $message = '{input} must be greater than {other}',
+        private readonly string $field,
+        public readonly string $message = '{input} must be greater than {other}',
     ) {}
 
     public function validate(mixed $value, ValidationContext $context): array
@@ -267,7 +289,7 @@ final readonly class GreaterThanField implements ContextualRule
 }
 ```
 
-A contextual rule can implement `ValidatesMissing` too, the way `RequiredIf` does.
+A rule that reads other fields can validate a missing value too, the way `RequiredIf` does.
 
 ## Accept a value outright
 
@@ -277,12 +299,16 @@ whether it `accepts()` the value. If one does, the field passes and no other rul
 stands in the list. Its `validate()` runs like any other rule's for values it does not accept.
 
 ```php
+use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Rule\SkipsMissing;
 use Dirthara\Validation\Contract\AcceptsValue;
 
-final readonly class AllowEmptyString implements AcceptsValue
+final class AllowEmptyString implements AcceptsValue
 {
+    use SkipsMissing;
+
     public function __construct(
-        public string $message = '{input} may be empty',
+        public readonly string $message = '{input} may be empty',
     ) {}
 
     public function accepts(mixed $value): bool
@@ -290,7 +316,7 @@ final readonly class AllowEmptyString implements AcceptsValue
         return $value === '';
     }
 
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         return [];
     }

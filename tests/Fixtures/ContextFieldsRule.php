@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Rule\Type;
+namespace Dirthara\Validation\Tests\Fixtures;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Rule\SkipsMissing;
 use Dirthara\Validation\ValidationContext;
 
-use function is_string;
+use function array_keys;
 
-final class StringType implements Rule
+final class ContextFieldsRule implements Rule
 {
     use SkipsMissing;
 
     public function __construct(
-        public readonly string $message = '{input} must be a string',
+        public readonly string $message = '{input} saw {fields}',
     ) {}
 
     /**
@@ -24,10 +24,6 @@ final class StringType implements Rule
      */
     public function validate(mixed $value, ValidationContext $context): array
     {
-        if (is_string($value)) {
-            return [];
-        }
-
-        return [new ValidationError(messageKey: $this->message)];
+        return [new ValidationError(messageKey: $this->message, parameters: ['fields' => array_keys($context->input)])];
     }
 }

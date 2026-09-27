@@ -6,18 +6,22 @@ namespace Dirthara\Validation\Tests\Fixtures;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 
-final readonly class FailingRule implements Rule
+final class FailingRule implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private string $field = '',
-        public string $message = '{input} failed',
+        private readonly string $field = '',
+        public readonly string $message = '{input} failed',
     ) {}
 
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         return [new ValidationError(messageKey: $this->message, path: $this->field === '' ? [] : [$this->field])];
     }

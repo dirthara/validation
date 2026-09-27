@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Rule\Presence;
 
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Contract\AcceptsValue;
 
-final readonly class Nullable implements AcceptsValue
+final class Nullable implements AcceptsValue
 {
+    use SkipsMissing;
+
     public function __construct(
-        public string $message = '{input} may be null',
+        public readonly string $message = '{input} may be null',
     ) {}
 
     public function accepts(mixed $value): bool
@@ -21,7 +25,7 @@ final readonly class Nullable implements AcceptsValue
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         return [];
     }

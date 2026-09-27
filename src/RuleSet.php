@@ -6,8 +6,6 @@ namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\Contract\AcceptsValue;
-use Dirthara\Validation\Contract\ContextualRule;
-use Dirthara\Validation\Contract\ValidatesMissing;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_array;
@@ -20,16 +18,16 @@ use function array_values;
 final readonly class RuleSet
 {
     /**
-     * @param list<Rule|ContextualRule> $rules
+     * @param list<Rule> $rules
      */
     private function __construct(
         private array $rules,
     ) {}
 
     /**
-     * @param Rule|ContextualRule|list<Rule|ContextualRule> $rules
+     * @param Rule|list<Rule> $rules
      */
-    public static function from(Rule|ContextualRule|array $rules): self
+    public static function from(Rule|array $rules): self
     {
         if (!is_array($rules)) {
             return new self([self::rule($rules)]);
@@ -50,12 +48,11 @@ final readonly class RuleSet
         }
 
         foreach ($this->rules as $rule) {
-            if ($value instanceof Missing && !$rule instanceof ValidatesMissing) {
+            if ($value instanceof Missing && !$rule->validatesMissing) {
                 continue;
             }
 
-            // @mago-expect analysis:too-many-arguments A rule that is also contextual has a validate() that accepts the context
-            $errors = $rule instanceof ContextualRule ? $rule->validate($value, $context) : $rule->validate($value);
+            $errors = $rule->validate($value, $context);
 
             if ($errors !== []) {
                 return $errors;
@@ -65,9 +62,9 @@ final readonly class RuleSet
         return [];
     }
 
-    private static function rule(mixed $rule): Rule|ContextualRule
+    private static function rule(mixed $rule): Rule
     {
-        if ($rule instanceof Rule || $rule instanceof ContextualRule) {
+        if ($rule instanceof Rule) {
             return $rule;
         }
 

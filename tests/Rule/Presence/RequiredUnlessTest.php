@@ -6,22 +6,21 @@ namespace Dirthara\Validation\Tests\Rule\Presence;
 
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
+use Dirthara\Validation\Contract\Rule;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
-use Dirthara\Validation\Contract\ValidatesMissing;
 use Dirthara\Validation\Rule\Presence\RequiredUnless;
 
 final class RequiredUnlessTest extends TestCase
 {
     #[Test]
-    public function it_is_a_contextual_rule_that_validates_a_missing_value(): void
+    public function it_is_a_rule_that_validates_a_missing_value(): void
     {
         $rule = new RequiredUnless(field: 'account_type', value: 'personal');
 
-        self::assertInstanceOf(ContextualRule::class, $rule);
-        self::assertInstanceOf(ValidatesMissing::class, $rule);
+        self::assertInstanceOf(Rule::class, $rule);
+        self::assertTrue($rule->validatesMissing);
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Text;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Text\MinLength;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -26,7 +27,7 @@ final class MinLengthTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new MinLength(3)->validate($value));
+        self::assertSame([], new MinLength(3)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -49,7 +50,7 @@ final class MinLengthTest extends TestCase
             [new ValidationError(messageKey: '{input} must be at least {minimum} characters long', parameters: [
                 'minimum' => 3,
             ])],
-            new MinLength(3)->validate($value),
+            new MinLength(3)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -67,7 +68,7 @@ final class MinLengthTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['minimum' => 3])],
-            $rule->validate('ab'),
+            $rule->validate(context: new ValidationContext([]), value: 'ab'),
         );
     }
 }

@@ -6,17 +6,21 @@ namespace Dirthara\Validation\Rule\Numeric;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_int;
 use function is_float;
 
-final readonly class Between implements Rule
+final class Between implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private int|float $minimum,
-        private int|float $maximum,
-        public string $message = '{input} must be between {minimum} and {maximum}',
+        private readonly int|float $minimum,
+        private readonly int|float $maximum,
+        public readonly string $message = '{input} must be between {minimum} and {maximum}',
     ) {
         if ($this->minimum > $this->maximum) {
             throw InvalidRuleException::invalidRange($this->minimum, $this->maximum);
@@ -26,7 +30,7 @@ final readonly class Between implements Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if ((is_int($value) || is_float($value)) && $value >= $this->minimum && $value <= $this->maximum) {
             return [];

@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Rule\Text\Length;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class LengthTest extends TestCase
@@ -26,7 +27,7 @@ final class LengthTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Length(3)->validate($value));
+        self::assertSame([], new Length(3)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -49,7 +50,7 @@ final class LengthTest extends TestCase
             [new ValidationError(messageKey: '{input} must be exactly {length} characters long', parameters: [
                 'length' => 3,
             ])],
-            new Length(3)->validate($value),
+            new Length(3)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -67,7 +68,7 @@ final class LengthTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['length' => 3])],
-            $rule->validate('ab'),
+            $rule->validate(context: new ValidationContext([]), value: 'ab'),
         );
     }
 }

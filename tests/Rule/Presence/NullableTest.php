@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Presence;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Contract\AcceptsValue;
 use Dirthara\Validation\Rule\Presence\Nullable;
 
@@ -27,8 +28,8 @@ final class NullableTest extends TestCase
     #[Test]
     public function it_rejects_nothing_itself(): void
     {
-        self::assertSame([], new Nullable()->validate('value'));
-        self::assertSame([], new Nullable()->validate(null));
+        self::assertSame([], new Nullable()->validate(context: new ValidationContext([]), value: 'value'));
+        self::assertSame([], new Nullable()->validate(context: new ValidationContext([]), value: null));
     }
 
     #[Test]

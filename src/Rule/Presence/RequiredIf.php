@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Rule\Presence;
 
 use Dirthara\Validation\Missing;
+use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
-use Dirthara\Validation\Contract\ValidatesMissing;
 
-final readonly class RequiredIf implements ContextualRule, ValidatesMissing
+final class RequiredIf implements Rule
 {
+    public bool $validatesMissing {
+        get => true;
+    }
+
     public function __construct(
-        private string|int $field,
-        private mixed $value,
-        public string $message = '{input} is required when {other} is {value}',
+        private readonly string|int $field,
+        private readonly mixed $value,
+        public readonly string $message = '{input} is required when {other} is {value}',
     ) {}
 
     /**

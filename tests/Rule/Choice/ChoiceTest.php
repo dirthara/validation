@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Choice;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Choice\Choice;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -26,7 +27,10 @@ final class ChoiceTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Choice(['draft', 'published', 1])->validate($value));
+        self::assertSame(
+            [],
+            new Choice(['draft', 'published', 1])->validate(context: new ValidationContext([]), value: $value),
+        );
     }
 
     /**
@@ -50,7 +54,7 @@ final class ChoiceTest extends TestCase
                 'published',
                 1,
             ]])],
-            new Choice(['draft', 'published', 1])->validate($value),
+            new Choice(['draft', 'published', 1])->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -68,7 +72,7 @@ final class ChoiceTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['choices' => ['draft', 'published', 1]])],
-            $rule->validate('archived'),
+            $rule->validate(context: new ValidationContext([]), value: 'archived'),
         );
     }
 }

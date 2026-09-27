@@ -32,9 +32,9 @@ An entry that is not a rule, such as a string or a validator that is not wrapped
 
 A field that is missing from the input and a field whose value is `null` are different things.
 
-A **missing** field reaches its rules as `Dirthara\Validation\Missing::Value`. Only the rules that implement
-`Dirthara\Validation\Contract\ValidatesMissing` run for it, still in order, so a field is optional unless it has one
-of them. `Required` and `Present` are two such rules.
+A **missing** field reaches its rules as `Dirthara\Validation\Missing::Value`. Only the rules whose `validatesMissing` property is
+`true` run for it, still in order, so a field is optional unless it has one of them. `Required`, `Present`,
+`RequiredIf`, and `RequiredUnless` are such rules.
 
 **`null`** is an ordinary value, and every rule receives it. Rules that expect a certain type, such as `Email`, `Each`,
 and `Nested`, reject it. Add `Nullable` to a field's rules to accept `null`: the field then passes for `null` without

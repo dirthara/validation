@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Numeric;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Numeric\Minimum;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -27,7 +28,7 @@ final class MinimumTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Minimum(18)->validate($value));
+        self::assertSame([], new Minimum(18)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -48,7 +49,7 @@ final class MinimumTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be at least {minimum}', parameters: ['minimum' => 18])],
-            new Minimum(18)->validate($value),
+            new Minimum(18)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -66,7 +67,7 @@ final class MinimumTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['minimum' => 18])],
-            $rule->validate(17),
+            $rule->validate(context: new ValidationContext([]), value: 17),
         );
     }
 }

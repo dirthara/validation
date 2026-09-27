@@ -8,24 +8,24 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Presence\Required;
-use Dirthara\Validation\Contract\ValidatesMissing;
 
 final class RequiredTest extends TestCase
 {
     #[Test]
     public function it_validates_a_missing_value(): void
     {
-        self::assertInstanceOf(ValidatesMissing::class, new Required());
+        self::assertTrue(new Required()->validatesMissing);
     }
 
     #[Test]
     public function it_accepts_any_value_but_null(): void
     {
-        self::assertSame([], new Required()->validate('value'));
-        self::assertSame([], new Required()->validate(''));
-        self::assertSame([], new Required()->validate(0));
-        self::assertSame([], new Required()->validate(false));
+        self::assertSame([], new Required()->validate(context: new ValidationContext([]), value: 'value'));
+        self::assertSame([], new Required()->validate(context: new ValidationContext([]), value: ''));
+        self::assertSame([], new Required()->validate(context: new ValidationContext([]), value: 0));
+        self::assertSame([], new Required()->validate(context: new ValidationContext([]), value: false));
     }
 
     #[Test]
@@ -33,8 +33,11 @@ final class RequiredTest extends TestCase
     {
         $required = [new ValidationError(messageKey: '{input} is required')];
 
-        self::assertEquals($required, new Required()->validate(Missing::Value));
-        self::assertEquals($required, new Required()->validate(null));
+        self::assertEquals($required, new Required()->validate(
+            context: new ValidationContext([]),
+            value: Missing::Value,
+        ));
+        self::assertEquals($required, new Required()->validate(context: new ValidationContext([]), value: null));
     }
 
     #[Test]
@@ -49,6 +52,9 @@ final class RequiredTest extends TestCase
         $rule = new Required(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate(null));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: null),
+        );
     }
 }

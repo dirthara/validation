@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Numeric;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Numeric\Between;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Dirthara\Validation\Exception\InvalidRuleException;
@@ -28,7 +29,7 @@ final class BetweenTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Between(1, 10)->validate($value));
+        self::assertSame([], new Between(1, 10)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -52,7 +53,7 @@ final class BetweenTest extends TestCase
                 'minimum' => 1,
                 'maximum' => 10,
             ])],
-            new Between(1, 10)->validate($value),
+            new Between(1, 10)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -70,14 +71,14 @@ final class BetweenTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['minimum' => 1, 'maximum' => 10])],
-            $rule->validate(0),
+            $rule->validate(context: new ValidationContext([]), value: 0),
         );
     }
 
     #[Test]
     public function it_accepts_a_range_of_a_single_value(): void
     {
-        self::assertSame([], new Between(5, 5)->validate(5));
+        self::assertSame([], new Between(5, 5)->validate(context: new ValidationContext([]), value: 5));
     }
 
     #[Test]

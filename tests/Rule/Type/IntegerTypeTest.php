@@ -8,6 +8,7 @@ use stdClass;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Type\IntegerType;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -27,7 +28,7 @@ final class IntegerTypeTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new IntegerType()->validate($value));
+        self::assertSame([], new IntegerType()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -49,7 +50,7 @@ final class IntegerTypeTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be an integer')],
-            new IntegerType()->validate($value),
+            new IntegerType()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -65,6 +66,9 @@ final class IntegerTypeTest extends TestCase
         $rule = new IntegerType(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('18'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: '18'),
+        );
     }
 }

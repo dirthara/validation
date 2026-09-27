@@ -22,6 +22,7 @@ use Dirthara\Validation\Rule\Presence\Required;
 use Dirthara\Validation\Rule\Presence\RequiredIf;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
+use Dirthara\Validation\Tests\Fixtures\ContextFieldsRule;
 
 final class RuleSetTest extends TestCase
 {
@@ -215,6 +216,18 @@ final class RuleSetTest extends TestCase
                 context: $context,
                 value: Missing::Value,
             ),
+        );
+    }
+
+    #[Test]
+    public function it_passes_the_same_context_to_every_rule_and_an_ordinary_rule_can_ignore_it(): void
+    {
+        $context = new ValidationContext(['email' => 'a@example.com', 'name' => 'Ada']);
+
+        self::assertSame([], RuleSet::from(new StringType())->validate(context: $context, value: 'text'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} saw {fields}', parameters: ['fields' => ['email', 'name']])],
+            RuleSet::from([new StringType(), new ContextFieldsRule()])->validate(context: $context, value: 'text'),
         );
     }
 }

@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Numeric;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Numeric\Positive;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -25,7 +26,7 @@ final class PositiveTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Positive()->validate($value));
+        self::assertSame([], new Positive()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -46,7 +47,7 @@ final class PositiveTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be positive')],
-            new Positive()->validate($value),
+            new Positive()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -62,6 +63,9 @@ final class PositiveTest extends TestCase
         $rule = new Positive(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate(0));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 0),
+        );
     }
 }

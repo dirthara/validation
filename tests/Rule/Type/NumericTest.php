@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Rule\Type\Numeric;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class NumericTest extends TestCase
@@ -29,7 +30,7 @@ final class NumericTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Numeric()->validate($value));
+        self::assertSame([], new Numeric()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -51,7 +52,7 @@ final class NumericTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be numeric')],
-            new Numeric()->validate($value),
+            new Numeric()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -67,6 +68,9 @@ final class NumericTest extends TestCase
         $rule = new Numeric(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('eighteen'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'eighteen'),
+        );
     }
 }

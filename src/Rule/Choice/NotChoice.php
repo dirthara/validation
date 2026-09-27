@@ -6,23 +6,27 @@ namespace Dirthara\Validation\Rule\Choice;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 
 use function in_array;
 
-final readonly class NotChoice implements Rule
+final class NotChoice implements Rule
 {
+    use SkipsMissing;
+
     /**
      * @param list<mixed> $choices
      */
     public function __construct(
-        private array $choices,
-        public string $message = '{input} must not be one of {choices}',
+        private readonly array $choices,
+        public readonly string $message = '{input} must not be one of {choices}',
     ) {}
 
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if (!in_array($value, $this->choices, strict: true)) {
             return [];

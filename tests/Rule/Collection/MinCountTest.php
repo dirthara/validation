@@ -8,6 +8,7 @@ use ArrayObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Dirthara\Validation\Rule\Collection\MinCount;
 
@@ -27,7 +28,7 @@ final class MinCountTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new MinCount(2)->validate($value));
+        self::assertSame([], new MinCount(2)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -53,7 +54,7 @@ final class MinCountTest extends TestCase
             [new ValidationError(messageKey: '{input} must contain at least {minimum} items', parameters: [
                 'minimum' => 2,
             ])],
-            new MinCount(2)->validate($value),
+            new MinCount(2)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -71,7 +72,7 @@ final class MinCountTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['minimum' => 2])],
-            $rule->validate([1]),
+            $rule->validate(context: new ValidationContext([]), value: [1]),
         );
     }
 }

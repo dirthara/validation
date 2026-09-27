@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Text;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Text\MaxLength;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -27,7 +28,7 @@ final class MaxLengthTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new MaxLength(3)->validate($value));
+        self::assertSame([], new MaxLength(3)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -49,7 +50,7 @@ final class MaxLengthTest extends TestCase
             [new ValidationError(messageKey: '{input} must be at most {maximum} characters long', parameters: [
                 'maximum' => 3,
             ])],
-            new MaxLength(3)->validate($value),
+            new MaxLength(3)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -67,7 +68,7 @@ final class MaxLengthTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['maximum' => 3])],
-            $rule->validate('abcd'),
+            $rule->validate(context: new ValidationContext([]), value: 'abcd'),
         );
     }
 }

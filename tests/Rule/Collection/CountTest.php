@@ -8,6 +8,7 @@ use ArrayObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Collection\Count;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -27,7 +28,7 @@ final class CountTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Count(2)->validate($value));
+        self::assertSame([], new Count(2)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -51,7 +52,7 @@ final class CountTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must contain exactly {count} items', parameters: ['count' => 2])],
-            new Count(2)->validate($value),
+            new Count(2)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -69,7 +70,7 @@ final class CountTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['count' => 2])],
-            $rule->validate([1]),
+            $rule->validate(context: new ValidationContext([]), value: [1]),
         );
     }
 }

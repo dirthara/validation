@@ -9,6 +9,7 @@ use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Type\ArrayType;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -28,7 +29,7 @@ final class ArrayTypeTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new ArrayType()->validate($value));
+        self::assertSame([], new ArrayType()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -48,7 +49,7 @@ final class ArrayTypeTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be an array')],
-            new ArrayType()->validate($value),
+            new ArrayType()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -66,7 +67,7 @@ final class ArrayTypeTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong')],
-            $rule->validate(new ArrayIterator([1])),
+            $rule->validate(context: new ValidationContext([]), value: new ArrayIterator([1])),
         );
     }
 }

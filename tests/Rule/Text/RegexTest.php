@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Regex;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
@@ -26,7 +27,7 @@ final class RegexTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Regex('/^[a-z]+$/')->validate($value));
+        self::assertSame([], new Regex('/^[a-z]+$/')->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -47,7 +48,7 @@ final class RegexTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} has an invalid format', parameters: ['pattern' => '/^[a-z]+$/'])],
-            new Regex('/^[a-z]+$/')->validate($value),
+            new Regex('/^[a-z]+$/')->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -65,7 +66,7 @@ final class RegexTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['pattern' => '/^[a-z]+$/'])],
-            $rule->validate('abc1'),
+            $rule->validate(context: new ValidationContext([]), value: 'abc1'),
         );
     }
 

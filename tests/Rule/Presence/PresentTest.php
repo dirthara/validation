@@ -8,23 +8,23 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Presence\Present;
-use Dirthara\Validation\Contract\ValidatesMissing;
 
 final class PresentTest extends TestCase
 {
     #[Test]
     public function it_validates_a_missing_value(): void
     {
-        self::assertInstanceOf(ValidatesMissing::class, new Present());
+        self::assertTrue(new Present()->validatesMissing);
     }
 
     #[Test]
     public function it_accepts_any_value_that_is_present_including_null(): void
     {
-        self::assertSame([], new Present()->validate('value'));
-        self::assertSame([], new Present()->validate(null));
-        self::assertSame([], new Present()->validate(''));
+        self::assertSame([], new Present()->validate(context: new ValidationContext([]), value: 'value'));
+        self::assertSame([], new Present()->validate(context: new ValidationContext([]), value: null));
+        self::assertSame([], new Present()->validate(context: new ValidationContext([]), value: ''));
     }
 
     #[Test]
@@ -32,7 +32,7 @@ final class PresentTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be present')],
-            new Present()->validate(Missing::Value),
+            new Present()->validate(context: new ValidationContext([]), value: Missing::Value),
         );
     }
 
@@ -48,6 +48,9 @@ final class PresentTest extends TestCase
         $rule = new Present(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate(Missing::Value));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: Missing::Value),
+        );
     }
 }

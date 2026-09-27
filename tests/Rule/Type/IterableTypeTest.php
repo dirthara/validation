@@ -9,6 +9,7 @@ use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Dirthara\Validation\Rule\Type\IterableType;
 
@@ -27,7 +28,7 @@ final class IterableTypeTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new IterableType()->validate($value));
+        self::assertSame([], new IterableType()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -47,7 +48,7 @@ final class IterableTypeTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be iterable')],
-            new IterableType()->validate($value),
+            new IterableType()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -63,6 +64,9 @@ final class IterableTypeTest extends TestCase
         $rule = new IterableType(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('text'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'text'),
+        );
     }
 }

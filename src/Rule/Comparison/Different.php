@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Rule\Comparison;
 
+use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
 
-final readonly class Different implements ContextualRule
+final class Different implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private string|int $field,
-        public string $message = '{input} must be different from {other}',
+        private readonly string|int $field,
+        public readonly string $message = '{input} must be different from {other}',
     ) {}
 
     /**

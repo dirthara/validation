@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Structure\Nested;
 
 final class NestedTest extends TestCase
@@ -18,10 +19,10 @@ final class NestedTest extends TestCase
     {
         $rule = new Nested(new ValidatorFactory()->create(['email' => new Email()]));
 
-        self::assertSame([], $rule->validate(['email' => 'a@example.com']));
+        self::assertSame([], $rule->validate(context: new ValidationContext([]), value: ['email' => 'a@example.com']));
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
-            $rule->validate(['email' => 'invalid']),
+            $rule->validate(context: new ValidationContext([]), value: ['email' => 'invalid']),
         );
     }
 
@@ -32,7 +33,7 @@ final class NestedTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be an array')],
-            $rule->validate('a@example.com'),
+            $rule->validate(context: new ValidationContext([]), value: 'a@example.com'),
         );
     }
 
@@ -48,6 +49,9 @@ final class NestedTest extends TestCase
         $rule = new Nested(new ValidatorFactory()->create([]), message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'invalid'),
+        );
     }
 }

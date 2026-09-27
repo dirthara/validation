@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Uuid;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UuidTest extends TestCase
@@ -26,7 +27,7 @@ final class UuidTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Uuid()->validate($value));
+        self::assertSame([], new Uuid()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -49,7 +50,7 @@ final class UuidTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid UUID')],
-            new Uuid()->validate($value),
+            new Uuid()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -67,7 +68,7 @@ final class UuidTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong')],
-            $rule->validate('f47ac10b58cc4372a5670e02b2c3d479'),
+            $rule->validate(context: new ValidationContext([]), value: 'f47ac10b58cc4372a5670e02b2c3d479'),
         );
     }
 }

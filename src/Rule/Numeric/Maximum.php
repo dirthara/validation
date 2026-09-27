@@ -6,21 +6,25 @@ namespace Dirthara\Validation\Rule\Numeric;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 
 use function is_int;
 use function is_float;
 
-final readonly class Maximum implements Rule
+final class Maximum implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        private int|float $maximum,
-        public string $message = '{input} must be at most {maximum}',
+        private readonly int|float $maximum,
+        public readonly string $message = '{input} must be at most {maximum}',
     ) {}
 
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if ((is_int($value) || is_float($value)) && $value <= $this->maximum) {
             return [];

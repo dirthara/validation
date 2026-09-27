@@ -7,23 +7,25 @@ namespace Dirthara\Validation\Rule\Collection;
 use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
 
 use function is_int;
 use function is_string;
 use function is_iterable;
 
-final readonly class Each implements ContextualRule
+final class Each implements Rule
 {
-    private RuleSet $rules;
+    use SkipsMissing;
+
+    private readonly RuleSet $rules;
 
     /**
-     * @param Rule|ContextualRule|list<Rule|ContextualRule> $rules
+     * @param Rule|list<Rule> $rules
      */
     public function __construct(
-        Rule|ContextualRule|array $rules,
-        public string $message = '{input} must be iterable',
+        Rule|array $rules,
+        public readonly string $message = '{input} must be iterable',
     ) {
         $this->rules = RuleSet::from($rules);
     }

@@ -7,18 +7,22 @@ namespace Dirthara\Validation\Rule\Presence;
 use Dirthara\Validation\Missing;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Contract\ValidatesMissing;
+use Dirthara\Validation\ValidationContext;
 
-final readonly class Present implements Rule, ValidatesMissing
+final class Present implements Rule
 {
+    public bool $validatesMissing {
+        get => true;
+    }
+
     public function __construct(
-        public string $message = '{input} must be present',
+        public readonly string $message = '{input} must be present',
     ) {}
 
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if (!$value instanceof Missing) {
             return [];

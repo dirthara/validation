@@ -6,19 +6,23 @@ namespace Dirthara\Validation\Rule\Type;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\Rule\SkipsMissing;
+use Dirthara\Validation\ValidationContext;
 
 use function is_int;
 
-final readonly class IntegerType implements Rule
+final class IntegerType implements Rule
 {
+    use SkipsMissing;
+
     public function __construct(
-        public string $message = '{input} must be an integer',
+        public readonly string $message = '{input} must be an integer',
     ) {}
 
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         if (is_int($value)) {
             return [];

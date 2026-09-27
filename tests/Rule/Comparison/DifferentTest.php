@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Tests\Rule\Comparison;
 
 use PHPUnit\Framework\TestCase;
+use Dirthara\Validation\Contract\Rule;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
-use Dirthara\Validation\Contract\ContextualRule;
-use Dirthara\Validation\Contract\ValidatesMissing;
 use Dirthara\Validation\Rule\Comparison\Different;
 
 final class DifferentTest extends TestCase
 {
     #[Test]
-    public function it_is_a_contextual_rule_that_skips_a_missing_value(): void
+    public function it_is_a_rule_that_skips_a_missing_value(): void
     {
-        self::assertInstanceOf(ContextualRule::class, new Different('username'));
-        self::assertNotInstanceOf(ValidatesMissing::class, new Different('username'));
+        self::assertInstanceOf(Rule::class, new Different('username'));
+        self::assertFalse(new Different('username')->validatesMissing);
     }
 
     #[Test]

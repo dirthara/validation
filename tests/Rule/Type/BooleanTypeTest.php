@@ -8,6 +8,7 @@ use stdClass;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Type\BooleanType;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -26,7 +27,7 @@ final class BooleanTypeTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new BooleanType()->validate($value));
+        self::assertSame([], new BooleanType()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -47,7 +48,7 @@ final class BooleanTypeTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a boolean')],
-            new BooleanType()->validate($value),
+            new BooleanType()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -63,6 +64,9 @@ final class BooleanTypeTest extends TestCase
         $rule = new BooleanType(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate(1));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 1),
+        );
     }
 }

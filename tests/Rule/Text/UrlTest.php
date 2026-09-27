@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Text\Url;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UrlTest extends TestCase
@@ -26,7 +27,7 @@ final class UrlTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Url()->validate($value));
+        self::assertSame([], new Url()->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -47,7 +48,7 @@ final class UrlTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid URL')],
-            new Url()->validate($value),
+            new Url()->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -63,6 +64,9 @@ final class UrlTest extends TestCase
         $rule = new Url(message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('example.com'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'example.com'),
+        );
     }
 }

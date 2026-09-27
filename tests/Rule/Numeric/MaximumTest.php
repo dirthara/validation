@@ -7,6 +7,7 @@ namespace Dirthara\Validation\Tests\Rule\Numeric;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Numeric\Maximum;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -27,7 +28,7 @@ final class MaximumTest extends TestCase
     #[DataProvider('validValues')]
     public function it_accepts_a_valid_value(mixed $value): void
     {
-        self::assertSame([], new Maximum(10)->validate($value));
+        self::assertSame([], new Maximum(10)->validate(context: new ValidationContext([]), value: $value));
     }
 
     /**
@@ -48,7 +49,7 @@ final class MaximumTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be at most {maximum}', parameters: ['maximum' => 10])],
-            new Maximum(10)->validate($value),
+            new Maximum(10)->validate(context: new ValidationContext([]), value: $value),
         );
     }
 
@@ -66,7 +67,7 @@ final class MaximumTest extends TestCase
         self::assertSame('{input} is wrong', $rule->message);
         self::assertEquals(
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['maximum' => 10])],
-            $rule->validate(11),
+            $rule->validate(context: new ValidationContext([]), value: 11),
         );
     }
 }
