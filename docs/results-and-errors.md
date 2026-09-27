@@ -14,7 +14,7 @@ description: What a validation returns, and what each error carries.
 | `errors`           | `list<ValidationError>`                     | Every error, in the order of the fields.        |
 | `valid()`          | `bool`                                      | Whether there are no errors.                    |
 | `failed()`         | `bool`                                      | Whether there is at least one error.            |
-| `errorsByField()`  | `array<string, list<ValidationError>>`      | The errors, grouped by their `field`.           |
+| `errorsByField()`  | `array<array-key, list<ValidationError>>`   | The errors, grouped by their `field`.           |
 
 ## Errors
 

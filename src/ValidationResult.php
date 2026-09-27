@@ -24,7 +24,7 @@ final readonly class ValidationResult
     }
 
     /**
-     * @return array<string, list<ValidationError>>
+     * @return array<array-key, list<ValidationError>>
      */
     public function errorsByField(): array
     {

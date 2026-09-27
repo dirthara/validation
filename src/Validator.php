@@ -13,7 +13,7 @@ final readonly class Validator implements ValidatorContract
     /**
      * @internal
      *
-     * @param array<string, RuleSet> $rules
+     * @param array<array-key, RuleSet> $rules
      */
     public function __construct(
         private array $rules,

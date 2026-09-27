@@ -50,5 +50,8 @@ final class ValidationResultTest extends TestCase
             new ValidationResult([$email, $required, $other])->errorsByField(),
         );
         self::assertSame([], new ValidationResult([])->errorsByField());
+
+        $first = new ValidationError(messageKey: '{input} is required', path: [0]);
+        self::assertSame([0 => [$first]], new ValidationResult([$first])->errorsByField());
     }
 }
