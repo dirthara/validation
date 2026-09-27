@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
+use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Collection\Each;
 use Dirthara\Validation\Rule\Structure\Nested;
 use Dirthara\Validation\Rule\Presence\Nullable;
@@ -23,8 +24,14 @@ final class EachTest extends TestCase
     #[Test]
     public function it_accepts_items_that_pass_every_rule(): void
     {
-        self::assertSame([], new Each(new Email())->validate(['a@example.com', 'b@example.com']));
-        self::assertSame([], new Each(new Email())->validate([]));
+        self::assertSame(
+            [],
+            new Each(new Email())->validate(
+                context: new ValidationContext([]),
+                value: ['a@example.com', 'b@example.com'],
+            ),
+        );
+        self::assertSame([], new Each(new Email())->validate(context: new ValidationContext([]), value: []));
     }
 
     #[Test]
@@ -32,14 +39,17 @@ final class EachTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be iterable')],
-            new Each(new Email())->validate('a@example.com'),
+            new Each(new Email())->validate(context: new ValidationContext([]), value: 'a@example.com'),
         );
     }
 
     #[Test]
     public function it_prefixes_each_error_with_the_key_of_its_item(): void
     {
-        $errors = new Each([new Email(), new FailingRule('inner')])->validate(['invalid', 'first' => 'a@example.com']);
+        $errors = new Each([new Email(), new FailingRule('inner')])->validate(
+            context: new ValidationContext([]),
+            value: ['invalid', 'first' => 'a@example.com'],
+        );
 
         self::assertEquals(
             [
@@ -53,7 +63,10 @@ final class EachTest extends TestCase
     #[Test]
     public function it_validates_the_items_of_any_iterable(): void
     {
-        $errors = new Each(new Email())->validate(new ArrayIterator(['a@example.com', 'invalid']));
+        $errors = new Each(new Email())->validate(
+            context: new ValidationContext([]),
+            value: new ArrayIterator(['a@example.com', 'invalid']),
+        );
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
@@ -71,7 +84,7 @@ final class EachTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
-            new Each(new Email())->validate($items),
+            new Each(new Email())->validate(context: new ValidationContext([]), value: $items),
         );
     }
 
@@ -80,9 +93,15 @@ final class EachTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: [1])],
-            new Each(new Email())->validate(['a@example.com', null]),
+            new Each(new Email())->validate(context: new ValidationContext([]), value: ['a@example.com', null]),
         );
-        self::assertSame([], new Each([new Nullable(), new Email()])->validate(['a@example.com', null]));
+        self::assertSame(
+            [],
+            new Each([new Nullable(), new Email()])->validate(
+                context: new ValidationContext([]),
+                value: ['a@example.com', null],
+            ),
+        );
     }
 
     #[Test]
@@ -90,7 +109,13 @@ final class EachTest extends TestCase
     {
         $each = new Each(new Nested(new ValidatorFactory()->create(['email' => [new Required(), new Email()]])));
 
-        $errors = $each->validate([['email' => 'a@example.com'], ['email' => 'invalid'], [], 'not an array', null]);
+        $errors = $each->validate(context: new ValidationContext([]), value: [
+            ['email' => 'a@example.com'],
+            ['email' => 'invalid'],
+            [],
+            'not an array',
+            null,
+        ]);
 
         self::assertEquals(
             [
@@ -124,6 +149,9 @@ final class EachTest extends TestCase
         $rule = new Each(new Email(), message: '{input} is wrong');
 
         self::assertSame('{input} is wrong', $rule->message);
-        self::assertEquals([new ValidationError(messageKey: '{input} is wrong')], $rule->validate('invalid'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is wrong')],
+            $rule->validate(context: new ValidationContext([]), value: 'invalid'),
+        );
     }
 }

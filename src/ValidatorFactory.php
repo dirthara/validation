@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
+use Dirthara\Validation\Contract\ContextualRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
 final readonly class ValidatorFactory
 {
     /**
-     * @param array<array-key, Rule|list<Rule>> $rules
+     * @param array<array-key, Rule|ContextualRule|list<Rule|ContextualRule>> $rules
      */
     public function create(array $rules): ValidatorContract
     {

@@ -12,10 +12,14 @@ use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\Rule\Text\Email;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
+use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Rule\Comparison\Same;
+use Dirthara\Validation\Rule\Type\StringType;
 use Dirthara\Validation\Rule\Presence\Present;
 use Dirthara\Validation\Rule\Structure\Nested;
 use Dirthara\Validation\Rule\Presence\Nullable;
 use Dirthara\Validation\Rule\Presence\Required;
+use Dirthara\Validation\Rule\Presence\RequiredIf;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
@@ -26,7 +30,7 @@ final class RuleSetTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} failed')],
-            RuleSet::from(new FailingRule())->validate('value'),
+            RuleSet::from(new FailingRule())->validate(context: new ValidationContext([]), value: 'value'),
         );
     }
 
@@ -37,15 +41,18 @@ final class RuleSetTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
-            $rules->validate(['email' => 'invalid']),
+            $rules->validate(context: new ValidationContext([]), value: ['email' => 'invalid']),
         );
-        self::assertEquals([new ValidationError(messageKey: '{input} must be an array')], $rules->validate('invalid'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} must be an array')],
+            $rules->validate(context: new ValidationContext([]), value: 'invalid'),
+        );
     }
 
     #[Test]
     public function it_passes_anything_without_rules(): void
     {
-        self::assertSame([], RuleSet::from([])->validate('value'));
+        self::assertSame([], RuleSet::from([])->validate(context: new ValidationContext([]), value: 'value'));
     }
 
     #[Test]
@@ -79,18 +86,24 @@ final class RuleSetTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address')],
-            $rules->validate('invalid'),
+            $rules->validate(context: new ValidationContext([]), value: 'invalid'),
         );
         self::assertEquals(
             [new ValidationError(messageKey: '{input} failed', path: ['first'])],
-            $rules->validate('a@example.com'),
+            $rules->validate(context: new ValidationContext([]), value: 'a@example.com'),
         );
     }
 
     #[Test]
     public function it_skips_every_rule_for_a_missing_value(): void
     {
-        self::assertSame([], RuleSet::from([new Email(), new FailingRule()])->validate(Missing::Value));
+        self::assertSame(
+            [],
+            RuleSet::from([new Email(), new FailingRule()])->validate(
+                context: new ValidationContext([]),
+                value: Missing::Value,
+            ),
+        );
     }
 
     #[Test]
@@ -98,7 +111,7 @@ final class RuleSetTest extends TestCase
     {
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address')],
-            RuleSet::from(new Email())->validate(null),
+            RuleSet::from(new Email())->validate(context: new ValidationContext([]), value: null),
         );
     }
 
@@ -107,8 +120,14 @@ final class RuleSetTest extends TestCase
     {
         $rules = RuleSet::from([new FailingRule(), new Required(), new Email()]);
 
-        self::assertEquals([new ValidationError(messageKey: '{input} is required')], $rules->validate(Missing::Value));
-        self::assertEquals([new ValidationError(messageKey: '{input} failed')], $rules->validate('a@example.com'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} is required')],
+            $rules->validate(context: new ValidationContext([]), value: Missing::Value),
+        );
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} failed')],
+            $rules->validate(context: new ValidationContext([]), value: 'a@example.com'),
+        );
     }
 
     #[Test]
@@ -118,15 +137,27 @@ final class RuleSetTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be present')],
-            $rules->validate(Missing::Value),
+            $rules->validate(context: new ValidationContext([]), value: Missing::Value),
         );
     }
 
     #[Test]
     public function it_passes_a_value_that_any_of_its_rules_accepts_wherever_that_rule_is(): void
     {
-        self::assertSame([], RuleSet::from([new Email(), new FailingRule(), new Nullable()])->validate(null));
-        self::assertSame([], RuleSet::from([new Required(), new Nullable(), new Email()])->validate(null));
+        self::assertSame(
+            [],
+            RuleSet::from([new Email(), new FailingRule(), new Nullable()])->validate(
+                context: new ValidationContext([]),
+                value: null,
+            ),
+        );
+        self::assertSame(
+            [],
+            RuleSet::from([new Required(), new Nullable(), new Email()])->validate(
+                context: new ValidationContext([]),
+                value: null,
+            ),
+        );
     }
 
     #[Test]
@@ -136,9 +167,9 @@ final class RuleSetTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address')],
-            $rules->validate('invalid'),
+            $rules->validate(context: new ValidationContext([]), value: 'invalid'),
         );
-        self::assertSame([], $rules->validate(Missing::Value));
+        self::assertSame([], $rules->validate(context: new ValidationContext([]), value: Missing::Value));
     }
 
     #[Test]
@@ -151,7 +182,39 @@ final class RuleSetTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(messageKey: '{input} must be a valid email address', path: ['email'])],
-            $rules->validate(['email' => 'invalid']),
+            $rules->validate(context: new ValidationContext([]), value: ['email' => 'invalid']),
+        );
+    }
+
+    #[Test]
+    public function it_passes_its_context_to_a_contextual_rule_and_only_the_value_to_an_ordinary_rule(): void
+    {
+        $rules = RuleSet::from([new StringType(), new Same('email')]);
+
+        self::assertSame([], $rules->validate(context: new ValidationContext(['email' => 'a']), value: 'a'));
+        self::assertEquals(
+            [new ValidationError(messageKey: '{input} must be the same as {other}', parameters: ['other' => 'email'])],
+            $rules->validate(context: new ValidationContext(['email' => 'a']), value: 'b'),
+        );
+    }
+
+    #[Test]
+    public function it_skips_a_contextual_rule_for_a_missing_value_unless_it_validates_one(): void
+    {
+        $context = new ValidationContext(['account_type' => 'business']);
+
+        self::assertSame([], RuleSet::from(new Same('email'))->validate(context: $context, value: Missing::Value));
+        self::assertEquals(
+            [
+                new ValidationError(messageKey: '{input} is required when {other} is {value}', parameters: [
+                    'other' => 'account_type',
+                    'value' => 'business',
+                ]),
+            ],
+            RuleSet::from(new RequiredIf('account_type', 'business'))->validate(
+                context: $context,
+                value: Missing::Value,
+            ),
         );
     }
 }

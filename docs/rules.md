@@ -19,6 +19,8 @@ In `Dirthara\Validation\Rule\Presence`.
 | `Required` | The value is present and not `null`. | `{input} is required` |
 | `Present` | The value is present, even when it is `null`. | `{input} must be present` |
 | `Nullable` | Never fails. Makes the field pass for `null`. | `{input} may be null` |
+| `RequiredIf(string\|int $field, mixed $value)` | Like `Required`, but only when the other field is identical to the value. | `{input} is required when {other} is {value}` |
+| `RequiredUnless(string\|int $field, mixed $value)` | Like `Required`, unless the other field is identical to the value. | `{input} is required unless {other} is {value}` |
 
 ### Type
 
@@ -60,6 +62,15 @@ In `Dirthara\Validation\Rule\Numeric`.
 | `Negative` | The value is an integer or a float less than zero. | `{input} must be negative` |
 | `Between(int\|float $minimum, int\|float $maximum)` | The value is an integer or a float from the minimum up to and including the maximum. | `{input} must be between {minimum} and {maximum}` |
 
+### Comparison
+
+In `Dirthara\Validation\Rule\Comparison`.
+
+| Rule | Passes when | Default message |
+|------|-------------|-----------------|
+| `Same(string\|int $field)` | The value is identical to the other field's value. | `{input} must be the same as {other}` |
+| `Different(string\|int $field)` | The value is not identical to the other field's value. | `{input} must be different from {other}` |
+
 ### Choice
 
 In `Dirthara\Validation\Rule\Choice`.
@@ -95,6 +106,28 @@ The message in the table is the one the rule itself reports. `Each` and `Nested`
 they contain. See [missing and null values](validating-input.md#missing-and-null-values) for how `Required`,
 `Present`, and `Nullable` combine.
 
+## Compare with other fields
+
+`Same`, `Different`, `RequiredIf`, and `RequiredUnless` read another field of the same input. They name it by its key,
+compare with `===`, and put it in their error's parameters as `other`.
+
+```php
+$validator = $factory->create([
+    'account_type' => [new Required(), new Choice(['personal', 'business'])],
+    'company_name' => [new RequiredIf(field: 'account_type', value: 'business'), new StringType()],
+    'email' => [new Required(), new Email()],
+    'email_confirmation' => [new Required(), new Same('email')],
+]);
+```
+
+- **Keys are literal.** `'address.street'` is a key with a dot in it, not the `street` field of `address`.
+- **The other field is a sibling.** Inside a `Nested` validator, the rules see the fields of the nested array, not those of
+  the outer input. The rules of an `Each` item see the fields next to the `Each` field.
+- **A missing other field** fails `Same` and `Different`, makes `RequiredIf` not require the field, and makes
+  `RequiredUnless` require it.
+- **A missing current field** skips `Same` and `Different`, like any rule that does not validate a missing value. Add
+  `Required` to make the field itself required.
+
 :::note
 `Email` and `Url` use PHP's `FILTER_VALIDATE_EMAIL` and `FILTER_VALIDATE_URL`, which only accept ASCII. An
 internationalised address, such as one with a non-ASCII local part or domain, fails. `Url` accepts any scheme, so check
@@ -114,6 +147,7 @@ the second item of `tags` reports `tags.1`.
 ```
 
 A key that is neither a string nor an integer, which only a generator can produce, is replaced by the item's position.
+The rules of an item that read other fields, such as `Different`, see the fields next to the `Each` field.
 
 ## Validate nested input
 
@@ -174,16 +208,17 @@ back up.
 
 ## Validate a missing value yourself
 
-A rule that has to decide what a missing value means, such as a conditional required rule, implements
-`Dirthara\Validation\Contract\ValidatesMissing` instead of `Rule`. It then also runs for a missing field, in its place
-among the other rules, and receives `Dirthara\Validation\Missing::Value` as the value.
+A rule that has to decide what a missing value means also implements the marker interface
+`Dirthara\Validation\Contract\ValidatesMissing`. It then also runs for a missing field, in its place among the other
+rules, and receives `Dirthara\Validation\Missing::Value` as the value.
 
 ```php
 use Dirthara\Validation\Missing;
+use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Contract\ValidatesMissing;
 
-final readonly class RequiredWhen implements ValidatesMissing
+final readonly class RequiredWhen implements Rule, ValidatesMissing
 {
     public function __construct(
         private bool $condition,
@@ -200,6 +235,39 @@ final readonly class RequiredWhen implements ValidatesMissing
     }
 }
 ```
+
+## Read other fields yourself
+
+A rule that needs other fields implements `Dirthara\Validation\Contract\ContextualRule` instead of `Rule`. Its
+`validate()` receives the value and a `Dirthara\Validation\ValidationContext` for the input the field belongs to.
+`has()` tells whether a key is present, and `value()` returns its value, or `Missing::Value` when it is not.
+
+```php
+use Dirthara\Validation\ValidationError;
+use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Contract\ContextualRule;
+
+final readonly class GreaterThanField implements ContextualRule
+{
+    public function __construct(
+        private string $field,
+        public string $message = '{input} must be greater than {other}',
+    ) {}
+
+    public function validate(mixed $value, ValidationContext $context): array
+    {
+        $other = $context->value($this->field);
+
+        if (is_int($value) && is_int($other) && $value > $other) {
+            return [];
+        }
+
+        return [new ValidationError(messageKey: $this->message, parameters: ['other' => $this->field])];
+    }
+}
+```
+
+A contextual rule can implement `ValidatesMissing` too, the way `RequiredIf` does.
 
 ## Accept a value outright
 

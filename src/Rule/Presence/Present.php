@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Rule\Presence;
 
 use Dirthara\Validation\Missing;
+use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Contract\ValidatesMissing;
 
-final readonly class Present implements ValidatesMissing
+final readonly class Present implements Rule, ValidatesMissing
 {
     public function __construct(
         public string $message = '{input} must be present',

@@ -6,6 +6,7 @@ namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\Contract\AcceptsValue;
+use Dirthara\Validation\Contract\ContextualRule;
 use Dirthara\Validation\Contract\ValidatesMissing;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
@@ -19,16 +20,16 @@ use function array_values;
 final readonly class RuleSet
 {
     /**
-     * @param list<Rule> $rules
+     * @param list<Rule|ContextualRule> $rules
      */
     private function __construct(
         private array $rules,
     ) {}
 
     /**
-     * @param Rule|list<Rule> $rules
+     * @param Rule|ContextualRule|list<Rule|ContextualRule> $rules
      */
-    public static function from(Rule|array $rules): self
+    public static function from(Rule|ContextualRule|array $rules): self
     {
         if (!is_array($rules)) {
             return new self([self::rule($rules)]);
@@ -40,7 +41,7 @@ final readonly class RuleSet
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value): array
+    public function validate(mixed $value, ValidationContext $context): array
     {
         foreach ($this->rules as $rule) {
             if ($rule instanceof AcceptsValue && $rule->accepts($value)) {
@@ -53,7 +54,8 @@ final readonly class RuleSet
                 continue;
             }
 
-            $errors = $rule->validate($value);
+            // @mago-expect analysis:too-many-arguments A rule that is also contextual has a validate() that accepts the context
+            $errors = $rule instanceof ContextualRule ? $rule->validate($value, $context) : $rule->validate($value);
 
             if ($errors !== []) {
                 return $errors;
@@ -63,9 +65,9 @@ final readonly class RuleSet
         return [];
     }
 
-    private static function rule(mixed $rule): Rule
+    private static function rule(mixed $rule): Rule|ContextualRule
     {
-        if ($rule instanceof Rule) {
+        if ($rule instanceof Rule || $rule instanceof ContextualRule) {
             return $rule;
         }
 
