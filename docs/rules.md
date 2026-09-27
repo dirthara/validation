@@ -54,6 +54,7 @@ In `Dirthara\Validation\Rule\Numeric`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
+| `Minimum(int\|float $minimum)` | The value is an integer or a float of at least the minimum. | `{input} must be at least {minimum}` |
 
 ### Choice
 
