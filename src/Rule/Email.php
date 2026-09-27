@@ -7,6 +7,11 @@ namespace Dirthara\Validation\Rule;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 
+use function is_string;
+use function filter_var;
+
+use const FILTER_VALIDATE_EMAIL;
+
 final readonly class Email implements Rule
 {
     /**

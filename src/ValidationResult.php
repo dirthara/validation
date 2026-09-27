@@ -12,4 +12,14 @@ final readonly class ValidationResult
     public function __construct(
         public array $errors,
     ) {}
+
+    public function valid(): bool
+    {
+        return $this->errors === [];
+    }
+
+    public function failed(): bool
+    {
+        return !$this->valid();
+    }
 }

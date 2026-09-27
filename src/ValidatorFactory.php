@@ -8,6 +8,8 @@ use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
+use function array_map;
+
 final readonly class ValidatorFactory
 {
     /**

@@ -7,6 +7,8 @@ namespace Dirthara\Validation;
 use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
+use function array_key_exists;
+
 final readonly class Validator implements ValidatorContract
 {
     /**

@@ -9,6 +9,8 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Contract\Validator;
 
+use function is_iterable;
+
 final readonly class Each implements Rule
 {
     private RuleSet $rules;

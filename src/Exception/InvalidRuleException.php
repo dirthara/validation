@@ -7,6 +7,9 @@ namespace Dirthara\Validation\Exception;
 use Throwable;
 use InvalidArgumentException;
 
+use function gettype;
+use function sprintf;
+
 class InvalidRuleException extends InvalidArgumentException implements ValidationException
 {
     use HasExceptionContext;
