@@ -24,6 +24,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | `StringType` | The value is a string. | `{input} must be a string` |
 | `IntegerType` | The value is an integer. | `{input} must be an integer` |
 | `FloatType` | The value is a float. An integer is not a float. | `{input} must be a float` |
+| `BooleanType` | The value is `true` or `false`. | `{input} must be a boolean` |
 
 ### String
 
