@@ -39,14 +39,6 @@ final readonly class RuleSet
     }
 
     /**
-     * @return list<Rule>
-     */
-    public function all(): array
-    {
-        return $this->rules;
-    }
-
-    /**
      * @return list<ValidationError>
      */
     public function validate(mixed $value, bool $present = true): array

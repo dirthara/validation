@@ -11,7 +11,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\ValidatorFactory;
-use Dirthara\Validation\Internal\NestedValidator;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
 use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
@@ -19,30 +18,33 @@ use Dirthara\Validation\Exception\InvalidRuleException;
 final class RuleSetTest extends TestCase
 {
     #[Test]
-    public function it_wraps_a_single_rule(): void
+    public function it_validates_with_a_single_rule(): void
     {
-        $rule = new Email();
-
-        self::assertSame([$rule], RuleSet::from($rule)->all());
+        self::assertEquals(
+            [new ValidationError(field: '', message: 'The value failed.', code: 'failing')],
+            RuleSet::from(new FailingRule())->validate('value'),
+        );
     }
 
     #[Test]
-    public function it_wraps_a_single_validator(): void
+    public function it_validates_with_a_single_validator_as_a_nested_rule(): void
     {
-        $rules = RuleSet::from(new ValidatorFactory()->create([]))->all();
+        $rules = RuleSet::from(new ValidatorFactory()->create(['email' => new Email()]));
 
-        self::assertCount(1, $rules);
-        self::assertInstanceOf(NestedValidator::class, $rules[0]);
+        self::assertEquals(
+            [new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email')],
+            $rules->validate(['email' => 'invalid']),
+        );
+        self::assertEquals(
+            [new ValidationError(field: '', message: 'The value must be an array.', code: 'array')],
+            $rules->validate('invalid'),
+        );
     }
 
     #[Test]
-    public function it_keeps_a_list_of_rules_in_order(): void
+    public function it_passes_anything_without_rules(): void
     {
-        $email = new Email();
-        $required = new RequiredRule();
-
-        self::assertSame([$required, $email], RuleSet::from([$required, $email])->all());
-        self::assertSame([], RuleSet::from([])->all());
+        self::assertSame([], RuleSet::from([])->validate('value'));
     }
 
     #[Test]
