@@ -57,7 +57,7 @@ final class RuleSetTest extends TestCase
             RuleSet::from([new Email(), $entry]);
             self::fail('Expected an InvalidRuleException.');
         } catch (InvalidRuleException $exception) {
-            self::assertSame('Rule "object" is not a valid rule.', $exception->getMessage());
+            self::assertSame('Rule "stdClass" is not a valid rule.', $exception->getMessage());
             self::assertSame(['rule' => $entry], $exception->context);
         }
     }

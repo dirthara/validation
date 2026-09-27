@@ -7,8 +7,8 @@ namespace Dirthara\Validation\Exception;
 use Throwable;
 use InvalidArgumentException;
 
-use function gettype;
 use function sprintf;
+use function get_debug_type;
 
 class InvalidRuleException extends InvalidArgumentException implements ValidationException
 {
@@ -26,6 +26,8 @@ class InvalidRuleException extends InvalidArgumentException implements Validatio
 
     public static function invalidRule(mixed $rule): self
     {
-        return new self(sprintf('Rule "%s" is not a valid rule.', gettype($rule)))->addContext(['rule' => $rule]);
+        return new self(sprintf('Rule "%s" is not a valid rule.', get_debug_type($rule)))->addContext([
+            'rule' => $rule,
+        ]);
     }
 }

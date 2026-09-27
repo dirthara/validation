@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Exception;
 
+use stdClass;
 use RuntimeException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -45,9 +46,10 @@ final class InvalidRuleExceptionTest extends TestCase
     public static function invalidRules(): iterable
     {
         yield 'string' => ['required', 'string'];
-        yield 'integer' => [42, 'integer'];
-        yield 'null' => [null, 'NULL'];
+        yield 'integer' => [42, 'int'];
+        yield 'null' => [null, 'null'];
         yield 'array' => [[], 'array'];
+        yield 'object' => [new stdClass(), 'stdClass'];
     }
 
     #[Test]
