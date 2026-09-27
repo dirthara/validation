@@ -28,12 +28,16 @@ final class ValidatorFactoryTest extends TestCase
         self::assertInstanceOf(Validator::class, $validator);
         self::assertEquals(
             [
-                new ValidationError(field: 'name', message: 'The value is required.', code: 'required'),
-                new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email'),
+                new ValidationError(message: 'The value is required.', code: 'required', path: ['name']),
                 new ValidationError(
-                    field: 'address.email',
                     message: 'The value must be a valid email address.',
                     code: 'email',
+                    path: ['email'],
+                ),
+                new ValidationError(
+                    message: 'The value must be a valid email address.',
+                    code: 'email',
+                    path: ['address', 'email'],
                 ),
             ],
             $validator->validate(['email' => 'invalid', 'address' => ['email' => 'invalid']])->errors,

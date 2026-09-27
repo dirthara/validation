@@ -24,7 +24,7 @@ final readonly class Email implements Rule
         }
 
         return [
-            new ValidationError(field: '', message: 'The value must be a valid email address.', code: 'email'),
+            new ValidationError(message: 'The value must be a valid email address.', code: 'email'),
         ];
     }
 }

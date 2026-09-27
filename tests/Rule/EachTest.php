@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule;
 
+use stdClass;
 use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Each;
@@ -29,7 +30,7 @@ final class EachTest extends TestCase
     public function it_rejects_a_value_that_is_not_iterable(): void
     {
         self::assertEquals(
-            [new ValidationError(field: '', message: 'The value must be iterable.', code: 'iterable')],
+            [new ValidationError(message: 'The value must be iterable.', code: 'iterable')],
             new Each(new Email())->validate('a@example.com'),
         );
     }
@@ -41,8 +42,8 @@ final class EachTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(field: '0', message: 'The value must be a valid email address.', code: 'email'),
-                new ValidationError(field: 'first.inner', message: 'The value failed.', code: 'failing'),
+                new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [0]),
+                new ValidationError(message: 'The value failed.', code: 'failing', path: ['first', 'inner']),
             ],
             $errors,
         );
@@ -54,8 +55,22 @@ final class EachTest extends TestCase
         $errors = new Each(new Email())->validate(new ArrayIterator(['a@example.com', 'invalid']));
 
         self::assertEquals(
-            [new ValidationError(field: '1', message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
             $errors,
+        );
+    }
+
+    #[Test]
+    public function it_uses_the_position_of_an_item_whose_key_is_not_a_string_or_an_integer(): void
+    {
+        $items = (static function (): iterable {
+            yield 'a@example.com' => 'a@example.com';
+            yield new stdClass() => 'invalid';
+        })();
+
+        self::assertEquals(
+            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: [1])],
+            new Each(new Email())->validate($items),
         );
     }
 
@@ -64,7 +79,7 @@ final class EachTest extends TestCase
     {
         self::assertSame([], new Each(new Email())->validate(['a@example.com', null]));
         self::assertEquals(
-            [new ValidationError(field: '1', message: 'The value is required.', code: 'required')],
+            [new ValidationError(message: 'The value is required.', code: 'required', path: [1])],
             new Each([new Required(), new Email()])->validate(['a@example.com', null]),
         );
     }
@@ -79,12 +94,12 @@ final class EachTest extends TestCase
         self::assertEquals(
             [
                 new ValidationError(
-                    field: '1.email',
                     message: 'The value must be a valid email address.',
                     code: 'email',
+                    path: [1, 'email'],
                 ),
-                new ValidationError(field: '2.email', message: 'The value is required.', code: 'required'),
-                new ValidationError(field: '3', message: 'The value must be an array.', code: 'array'),
+                new ValidationError(message: 'The value is required.', code: 'required', path: [2, 'email']),
+                new ValidationError(message: 'The value must be an array.', code: 'array', path: [3]),
             ],
             $errors,
         );

@@ -18,6 +18,10 @@ final readonly class FailingRule implements Rule
      */
     public function validate(mixed $value): array
     {
-        return [new ValidationError(field: $this->field, message: 'The value failed.', code: 'failing')];
+        return [new ValidationError(
+            message: 'The value failed.',
+            code: 'failing',
+            path: $this->field === '' ? [] : [$this->field],
+        )];
     }
 }

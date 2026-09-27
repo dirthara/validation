@@ -24,7 +24,7 @@ final class RequiredTest extends TestCase
     public function it_rejects_null(): void
     {
         self::assertEquals(
-            [new ValidationError(field: '', message: 'The value is required.', code: 'required')],
+            [new ValidationError(message: 'The value is required.', code: 'required')],
             new Required()->validate(null),
         );
     }

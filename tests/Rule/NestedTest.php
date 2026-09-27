@@ -20,7 +20,7 @@ final class NestedTest extends TestCase
 
         self::assertSame([], $rule->validate(['email' => 'a@example.com']));
         self::assertEquals(
-            [new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(message: 'The value must be a valid email address.', code: 'email', path: ['email'])],
             $rule->validate(['email' => 'invalid']),
         );
     }
@@ -31,7 +31,7 @@ final class NestedTest extends TestCase
         $rule = new Nested(new ValidatorFactory()->create(['email' => new Email()]));
 
         self::assertEquals(
-            [new ValidationError(field: '', message: 'The value must be an array.', code: 'array')],
+            [new ValidationError(message: 'The value must be an array.', code: 'array')],
             $rule->validate('a@example.com'),
         );
     }

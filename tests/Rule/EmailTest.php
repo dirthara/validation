@@ -39,7 +39,7 @@ final class EmailTest extends TestCase
         $errors = new Email()->validate($value);
 
         self::assertEquals(
-            [new ValidationError(field: '', message: 'The value must be a valid email address.', code: 'email')],
+            [new ValidationError(message: 'The value must be a valid email address.', code: 'email')],
             $errors,
         );
     }

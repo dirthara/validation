@@ -18,6 +18,6 @@ final readonly class Required implements Rule
             return [];
         }
 
-        return [new ValidationError(field: '', message: 'The value is required.', code: 'required')];
+        return [new ValidationError(message: 'The value is required.', code: 'required')];
     }
 }

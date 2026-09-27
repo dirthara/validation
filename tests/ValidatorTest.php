@@ -36,11 +36,15 @@ final class ValidatorTest extends TestCase
 
         self::assertEquals(
             [
-                new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email'),
                 new ValidationError(
-                    field: 'backup',
                     message: 'The value must be a valid email address.',
                     code: 'email',
+                    path: ['email'],
+                ),
+                new ValidationError(
+                    message: 'The value must be a valid email address.',
+                    code: 'email',
+                    path: ['backup'],
                 ),
             ],
             $validator->validate(['email' => 'invalid', 'backup' => 'also invalid'])->errors,
@@ -51,7 +55,7 @@ final class ValidatorTest extends TestCase
     public function it_treats_a_missing_field_like_a_null_one(): void
     {
         $validator = new Validator(['name' => RuleSet::from(new Required())]);
-        $required = new ValidationError(field: 'name', message: 'The value is required.', code: 'required');
+        $required = new ValidationError(message: 'The value is required.', code: 'required', path: ['name']);
 
         self::assertEquals([$required], $validator->validate([])->errors);
         self::assertEquals([$required], $validator->validate(['name' => null])->errors);
@@ -75,9 +79,9 @@ final class ValidatorTest extends TestCase
 
         self::assertEquals(
             [new ValidationError(
-                field: 'contacts.1.email',
                 message: 'The value must be a valid email address.',
                 code: 'email',
+                path: ['contacts', 1, 'email'],
             )],
             $validator->validate(['contacts' => [['email' => 'a@example.com'], ['email' => 'invalid']]])->errors,
         );

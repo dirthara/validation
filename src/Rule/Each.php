@@ -8,6 +8,8 @@ use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 
+use function is_int;
+use function is_string;
 use function is_iterable;
 
 final readonly class Each implements Rule
@@ -29,16 +31,22 @@ final readonly class Each implements Rule
     {
         if (!is_iterable($value)) {
             return [
-                new ValidationError(field: '', message: 'The value must be iterable.', code: 'iterable'),
+                new ValidationError(message: 'The value must be iterable.', code: 'iterable'),
             ];
         }
 
         $errors = [];
 
+        $index = 0;
+
         foreach ($value as $key => $item) {
+            $segment = is_int($key) || is_string($key) ? $key : $index;
+
             foreach ($this->rules->validate($item) as $error) {
-                $errors[] = $error->prefix((string) $key);
+                $errors[] = $error->prefix($segment);
             }
+
+            $index++;
         }
 
         return $errors;

@@ -22,7 +22,7 @@ final readonly class Nested implements Rule
     public function validate(mixed $value): array
     {
         if (!is_array($value)) {
-            return [new ValidationError(field: '', message: 'The value must be an array.', code: 'array')];
+            return [new ValidationError(message: 'The value must be an array.', code: 'array')];
         }
 
         // @mago-expect analysis:less-specific-argument The validator looks its fields up by key, so integer keys are harmless
