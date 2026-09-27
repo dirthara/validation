@@ -67,6 +67,7 @@ In `Dirthara\Validation\Rule\Choice`.
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 | `Choice(list<mixed> $choices)` | The value is one of the choices, compared strictly. | `{input} must be one of {choices}` |
+| `NotChoice(list<mixed> $choices)` | The value is none of the choices, compared strictly. | `{input} must not be one of {choices}` |
 
 ### Collections
 
