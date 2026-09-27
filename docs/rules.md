@@ -21,6 +21,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `Nullable` | Never fails. Makes the field pass for `null`. | `{input} may be null` |
 | `RequiredIf(string\|int $field, mixed $value)` | Like `Required`, but only when the other field is identical to the value. | `{input} is required when {other} is {value}` |
 | `RequiredUnless(string\|int $field, mixed $value)` | Like `Required`, unless the other field is identical to the value. | `{input} is required unless {other} is {value}` |
+| `RequiredWith(string\|int $field)` | The current value exists and is non-null, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is required when {other} is present` |
 
 ### Type
 
@@ -108,8 +109,8 @@ they contain. See [missing and null values](validating-input.md#missing-and-null
 
 ## Compare with other fields
 
-`Same`, `Different`, `RequiredIf`, and `RequiredUnless` read another field of the same input. They name it by its key,
-compare with `===`, and put it in their error's parameters as `other`.
+Rules that read another field name it by its literal key and put that key in their error parameters as `other`.
+`Same`, `Different`, `RequiredIf`, and `RequiredUnless` use strict comparison (`===`).
 
 ```php
 $validator = $factory->create([
