@@ -30,6 +30,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `ProhibitedIf(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
 | `ProhibitedUnless(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
 | `RequiredWithAll(list<string\|int> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
+| `RequiredWithoutAll(list<string\|int> $fields)` | The current value exists and is non-null, or at least one referenced field exists and is non-null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when none of {others} are present` |
 
 ### Type
 
@@ -126,6 +127,16 @@ the current key to be absent, while `PresentUnless` requires it. An explicit nul
 `ProhibitedIf` and `ProhibitedUnless` also compare strictly. A missing reference leaves `ProhibitedIf` inactive and
 makes `ProhibitedUnless` prohibit the current key. These rules check presence, so empty supplied values still fail
 when prohibited. Like every rule, they are bypassed if an `AcceptsValue` rule such as `Nullable` accepts the value.
+
+The rules that reference several fields take an array, with the usual optional message argument:
+
+```php
+new RequiredWithAll(['company', 'vat_number']);
+new RequiredWithoutAll(['email', 'phone'], message: '{input} is needed without {others}');
+```
+
+Their `others` parameter is the original list of keys; the existing message renderer joins them with `, `.
+Both rules require the current value when given an empty list of references.
 
 ## Compare with other fields
 
