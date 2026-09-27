@@ -30,4 +30,12 @@ final class InvalidRuleException extends InvalidArgumentException implements Val
             'rule' => $rule,
         ]);
     }
+
+    public static function invalidPattern(string $pattern): self
+    {
+        return new self(
+            message: sprintf('Pattern "%s" is not a valid regular expression.', self::printable($pattern)),
+            context: ['pattern' => $pattern],
+        );
+    }
 }

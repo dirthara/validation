@@ -61,4 +61,13 @@ final class InvalidRuleExceptionTest extends TestCase
         self::assertSame('Rule "' . $type . '" is not a valid rule.', $exception->getMessage());
         self::assertSame(['rule' => $rule], $exception->context);
     }
+
+    #[Test]
+    public function it_describes_an_invalid_pattern(): void
+    {
+        $exception = InvalidRuleException::invalidPattern("/[a-z\n");
+
+        self::assertSame('Pattern "/[a-z\\n" is not a valid regular expression.', $exception->getMessage());
+        self::assertSame(['pattern' => "/[a-z\n"], $exception->context);
+    }
 }
