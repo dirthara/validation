@@ -27,6 +27,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | `BooleanType` | The value is `true` or `false`. | `{input} must be a boolean` |
 | `Numeric` | The value is an integer, a float, or a numeric string. | `{input} must be numeric` |
 | `ArrayType` | The value is an array. | `{input} must be an array` |
+| `IterableType` | The value is an array or a `Traversable`. | `{input} must be iterable` |
 
 ### String
 
