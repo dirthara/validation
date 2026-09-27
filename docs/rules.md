@@ -22,6 +22,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `RequiredIf(string\|int $field, mixed $value)` | Like `Required`, but only when the other field is identical to the value. | `{input} is required when {other} is {value}` |
 | `RequiredUnless(string\|int $field, mixed $value)` | Like `Required`, unless the other field is identical to the value. | `{input} is required unless {other} is {value}` |
 | `RequiredWith(string\|int $field)` | The current value exists and is non-null, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is required when {other} is present` |
+| `RequiredWithout(string\|int $field)` | The current value exists and is non-null, when the other field is missing or null. | `{input} is required when {other} is not present` |
 
 ### Type
 
