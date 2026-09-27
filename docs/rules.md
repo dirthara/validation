@@ -57,6 +57,7 @@ In `Dirthara\Validation\Rule\Numeric`.
 | `Minimum(int\|float $minimum)` | The value is an integer or a float of at least the minimum. | `{input} must be at least {minimum}` |
 | `Maximum(int\|float $maximum)` | The value is an integer or a float of at most the maximum. | `{input} must be at most {maximum}` |
 | `Positive` | The value is an integer or a float greater than zero. | `{input} must be positive` |
+| `Negative` | The value is an integer or a float less than zero. | `{input} must be negative` |
 
 ### Choice
 
