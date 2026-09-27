@@ -28,6 +28,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `PresentIf(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), when the other field strictly equals the configured value. | `{input} must be present when {other} is {value}` |
 | `PresentUnless(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
 | `ProhibitedIf(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
+| `ProhibitedUnless(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
 
 ### Type
 
@@ -116,6 +117,10 @@ they contain. See [missing and null values](validating-input.md#missing-and-null
 A missing reference never satisfies the equality condition of `PresentIf` or `PresentUnless`: `PresentIf` allows
 the current key to be absent, while `PresentUnless` requires it. An explicit null reference can match a configured
 `null` value.
+
+`ProhibitedIf` and `ProhibitedUnless` also compare strictly. A missing reference leaves `ProhibitedIf` inactive and
+makes `ProhibitedUnless` prohibit the current key. These rules check presence, so empty supplied values still fail
+when prohibited. Like every rule, they are bypassed if an `AcceptsValue` rule such as `Nullable` accepts the value.
 
 ## Compare with other fields
 
