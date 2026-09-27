@@ -70,4 +70,13 @@ final class InvalidRuleExceptionTest extends TestCase
         self::assertSame('Pattern "/[a-z\\n" is not a valid regular expression.', $exception->getMessage());
         self::assertSame(['pattern' => "/[a-z\n"], $exception->context);
     }
+
+    #[Test]
+    public function it_describes_an_invalid_range(): void
+    {
+        $exception = InvalidRuleException::invalidRange(10, 1.5);
+
+        self::assertSame('Minimum 10 is greater than maximum 1.5.', $exception->getMessage());
+        self::assertSame(['minimum' => 10, 'maximum' => 1.5], $exception->context);
+    }
 }

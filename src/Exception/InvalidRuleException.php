@@ -38,4 +38,12 @@ final class InvalidRuleException extends InvalidArgumentException implements Val
             context: ['pattern' => $pattern],
         );
     }
+
+    public static function invalidRange(int|float $minimum, int|float $maximum): self
+    {
+        return new self(message: sprintf('Minimum %s is greater than maximum %s.', $minimum, $maximum), context: [
+            'minimum' => $minimum,
+            'maximum' => $maximum,
+        ]);
+    }
 }
