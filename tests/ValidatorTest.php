@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 

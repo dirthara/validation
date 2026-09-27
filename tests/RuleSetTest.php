@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Tests\Internal;
+namespace Dirthara\Validation\Tests;
 
 use stdClass;
 use PHPUnit\Framework\TestCase;
+use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\ValidatorFactory;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
 use Dirthara\Validation\Tests\Fixtures\RequiredRule;

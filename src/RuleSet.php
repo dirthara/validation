@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dirthara\Validation\Internal;
+namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
-use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_array;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Rule;
 
+use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Internal\RuleSet;
 
 use function is_iterable;
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
-use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Exception\InvalidRuleException;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
