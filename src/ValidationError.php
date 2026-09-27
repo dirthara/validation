@@ -9,6 +9,8 @@ use Stringable;
 use function strtr;
 use function implode;
 use function is_bool;
+use function is_array;
+use function array_map;
 use function is_scalar;
 use function get_debug_type;
 
@@ -54,6 +56,7 @@ final class ValidationError
             is_bool($value) => $value ? 'true' : 'false',
             $value === null => 'null',
             is_scalar($value), $value instanceof Stringable => (string) $value,
+            is_array($value) => implode(', ', array_map(self::render(...), $value)),
             default => get_debug_type($value),
         };
     }

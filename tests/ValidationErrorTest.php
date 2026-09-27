@@ -96,7 +96,10 @@ final class ValidationErrorTest extends TestCase
             },
             'stringable',
         ];
-        yield 'array' => [[1, 2], 'array'];
+        yield 'list' => [[1, 2], '1, 2'];
+        yield 'mixed list' => [['a', true, null, 1.5], 'a, true, null, 1.5'];
+        yield 'nested list' => [[1, [2, 3]], '1, 2, 3'];
+        yield 'empty array' => [[], ''];
         yield 'object' => [new stdClass(), 'stdClass'];
     }
 
