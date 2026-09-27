@@ -22,6 +22,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
 | `StringType` | The value is a string. | `{input} must be a string` |
+| `IntegerType` | The value is an integer. | `{input} must be an integer` |
 
 ### String
 
