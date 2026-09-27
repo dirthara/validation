@@ -29,6 +29,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `PresentUnless(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
 | `ProhibitedIf(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
 | `ProhibitedUnless(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
+| `RequiredWithAll(list<string\|int> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
 
 ### Type
 
