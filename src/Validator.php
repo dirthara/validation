@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation;
 
-use Dirthara\Validation\Contract\Rule;
+use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
 final readonly class Validator implements ValidatorContract
 {
     /**
-     * @param array<string, list<Rule|ValidatorContract>> $rules
+     * @param array<string, RuleSet> $rules
      */
     public function __construct(
         private array $rules,
@@ -21,6 +21,17 @@ final readonly class Validator implements ValidatorContract
      */
     public function validate(array $input): ValidationResult
     {
-        // ...
+        $errors = [];
+
+        foreach ($this->rules as $field => $ruleSet) {
+            $present = array_key_exists($field, $input);
+            $value = $input[$field] ?? null;
+
+            foreach ($ruleSet->validate($value, $present) as $error) {
+                $errors[] = $error->prefix($field);
+            }
+        }
+
+        return new ValidationResult($errors);
     }
 }

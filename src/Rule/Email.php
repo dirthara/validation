@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Dirthara\Validation\Rule;
+
+use Dirthara\Validation\Contract\Rule;
+use Dirthara\Validation\ValidationError;
+
+final readonly class Email implements Rule
+{
+    /**
+     * @return list<ValidationError>
+     */
+    public function validate(mixed $value, bool $present = true): array
+    {
+        if (!$present || $value === null) {
+            return [];
+        }
+
+        if (is_string($value) && filter_var($value, FILTER_VALIDATE_EMAIL) !== false) {
+            return [];
+        }
+
+        return [
+            new ValidationError(field: '', message: 'The value must be a valid email address.', code: 'email'),
+        ];
+    }
+}

@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
+use Dirthara\Validation\Internal\RuleSet;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
-final class ValidatorFactory
+final readonly class ValidatorFactory
 {
     /**
      * @param array<string, Rule|ValidatorContract|list<Rule|ValidatorContract>> $rules
      */
-    public function create(array $rules): ValidatorContract
+    public function create(array $rules): Validator
     {
-        $normalized = array_map(static fn($fieldRules) => (
-            is_array($fieldRules) ? array_values($fieldRules) : [$fieldRules]
-        ), $rules);
+        $ruleSets = array_map(RuleSet::from(...), $rules);
 
-        return new Validator($normalized);
+        return new Validator($ruleSets);
     }
 }
