@@ -78,6 +78,7 @@ In `Dirthara\Validation\Rule\Collection`.
 | `Each(Rule\|list<Rule>)` | The value is iterable and every item passes the rules. | `{input} must be iterable` |
 | `Count(int $count)` | The value is an array or a `Countable` with exactly that many items. | `{input} must contain exactly {count} items` |
 | `MinCount(int $minimum)` | The value is an array or a `Countable` with at least that many items. | `{input} must contain at least {minimum} items` |
+| `MaxCount(int $maximum)` | The value is an array or a `Countable` with at most that many items. | `{input} must contain at most {maximum} items` |
 
 ### Structure
 
