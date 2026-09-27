@@ -65,8 +65,8 @@ value is a string, without having to handle every other type itself.
 
 ## Fields without rules
 
-Input fields that have no rules are ignored. They do not cause an error, and they are not part of the
-[validated input](results-and-errors.md#validated-input).
+Input fields that have no rules are ignored, and they do not cause an error. The result reports only whether the input is
+valid, not a filtered copy of it, so read the values you declared rules for from your own input.
 
 ## Input keys
 

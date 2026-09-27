@@ -39,16 +39,6 @@ final class ValidationResultTest extends TestCase
     }
 
     #[Test]
-    public function it_carries_the_validated_input(): void
-    {
-        self::assertSame([], new ValidationResult([])->validated);
-        self::assertSame(
-            ['email' => 'a@example.com'],
-            new ValidationResult([], ['email' => 'a@example.com'])->validated,
-        );
-    }
-
-    #[Test]
     public function it_groups_its_errors_by_field(): void
     {
         $email = new ValidationError(message: 'Invalid.', code: 'email', path: ['email']);

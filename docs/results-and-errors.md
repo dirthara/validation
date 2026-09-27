@@ -12,18 +12,9 @@ description: What a validation returns, and what each error carries.
 | Member             | Type                                        | Meaning                                         |
 |--------------------|---------------------------------------------|-------------------------------------------------|
 | `errors`           | `list<ValidationError>`                     | Every error, in the order of the fields.        |
-| `validated`        | `array<array-key, mixed>`                   | The input of the fields that passed.            |
 | `valid()`          | `bool`                                      | Whether there are no errors.                    |
 | `failed()`         | `bool`                                      | Whether there is at least one error.            |
 | `errorsByField()`  | `array<string, list<ValidationError>>`      | The errors, grouped by their `field`.           |
-
-### Validated input
-
-`validated` holds the input value of every field that has rules, is present in the input, and passed. A field that
-failed, a missing field, and a field without rules are left out. A field that is present with a `null` value and passes,
-for example through `Nullable`, is included with its `null` value.
-
-The values are the input as given. Validation does not convert or trim them.
 
 ## Errors
 

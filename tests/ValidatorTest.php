@@ -115,25 +115,4 @@ final class ValidatorTest extends TestCase
             $validator->validate(['contacts' => [['email' => 'a@example.com'], ['email' => 'invalid']]])->errors,
         );
     }
-
-    #[Test]
-    public function it_returns_the_input_of_the_fields_that_passed(): void
-    {
-        $validator = new ValidatorFactory()->create([
-            'email' => new Email(),
-            'backup' => new Email(),
-            'name' => new Required(),
-            'nickname' => new Email(),
-            'note' => [new Nullable(), new Email()],
-        ]);
-
-        $result = $validator->validate([
-            'email' => 'a@example.com',
-            'backup' => 'invalid',
-            'note' => null,
-            'other' => 'not validated',
-        ]);
-
-        self::assertSame(['email' => 'a@example.com', 'note' => null], $result->validated);
-    }
 }
