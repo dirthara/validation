@@ -26,6 +26,7 @@ In `Dirthara\Validation\Rule\Presence`.
 | `ProhibitedWith(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is prohibited when {other} is present` |
 | `ProhibitedWithout(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field is missing or null. | `{input} is prohibited when {other} is not present` |
 | `PresentIf(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), when the other field strictly equals the configured value. | `{input} must be present when {other} is {value}` |
+| `PresentUnless(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
 
 ### Type
 
@@ -110,6 +111,10 @@ Every rule takes a `message` argument that replaces its default, as in `new Emai
 The message in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
 they contain. See [missing and null values](validating-input.md#missing-and-null-values) for how `Required`,
 `Present`, and `Nullable` combine.
+
+A missing reference never satisfies the equality condition of `PresentIf` or `PresentUnless`: `PresentIf` allows
+the current key to be absent, while `PresentUnless` requires it. An explicit null reference can match a configured
+`null` value.
 
 ## Compare with other fields
 
