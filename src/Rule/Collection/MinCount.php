@@ -8,6 +8,7 @@ use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Rule\SkipsMissing;
 use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function count;
 use function is_countable;
@@ -16,10 +17,17 @@ final class MinCount implements Rule
 {
     use SkipsMissing;
 
+    /**
+     * @throws InvalidRuleException
+     */
     public function __construct(
         private readonly int $minimum,
         public readonly string $message = '{input} must contain at least {minimum} items',
-    ) {}
+    ) {
+        if ($this->minimum < 0) {
+            throw InvalidRuleException::negativeSize(self::class, 'minimum', $this->minimum);
+        }
+    }
 
     /**
      * @return list<ValidationError>

@@ -10,6 +10,7 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Text\MinLength;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class MinLengthTest extends TestCase
 {
@@ -70,5 +71,30 @@ final class MinLengthTest extends TestCase
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['minimum' => 3])],
             $rule->validate(context: new ValidationContext([]), value: 'ab'),
         );
+    }
+
+    #[Test]
+    public function it_accepts_a_zero_size(): void
+    {
+        self::assertSame([], new MinLength(0)->validate('', new ValidationContext([])));
+    }
+
+    #[Test]
+    public function it_rejects_a_negative_size_during_construction(): void
+    {
+        try {
+            new MinLength(-1);
+            self::fail('Expected invalid rule configuration.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame(
+                [
+                    'rule' => MinLength::class,
+                    'parameter' => 'minimum',
+                    'value' => -1,
+                ],
+                $exception->context,
+            );
+            self::assertSame('minimum must be zero or greater for ' . MinLength::class . '.', $exception->getMessage());
+        }
     }
 }

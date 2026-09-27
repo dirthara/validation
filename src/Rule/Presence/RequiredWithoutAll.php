@@ -8,6 +8,9 @@ use Dirthara\Validation\Missing;
 use Dirthara\Validation\Contract\Rule;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
+use Dirthara\Validation\Exception\InvalidRuleException;
+
+use function is_string;
 
 final class RequiredWithoutAll implements Rule
 {
@@ -16,12 +19,27 @@ final class RequiredWithoutAll implements Rule
     }
 
     /**
-     * @param list<string> $fields
+     * @param non-empty-list<string> $fields
+     *
+     * @throws InvalidRuleException
      */
     public function __construct(
         private readonly array $fields,
         public readonly string $message = '{input} is required when none of {others} are present',
-    ) {}
+    ) {
+        /** @var array<array-key, mixed> $fields */
+        $fields = $this->fields;
+
+        if ($fields === []) {
+            throw InvalidRuleException::emptyFields(self::class);
+        }
+
+        foreach ($fields as $field) {
+            if (!is_string($field)) {
+                throw InvalidRuleException::invalidFieldReference(self::class, $field);
+            }
+        }
+    }
 
     /**
      * @return list<ValidationError>

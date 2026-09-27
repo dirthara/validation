@@ -113,4 +113,15 @@ final class RequiredUnlessTest extends TestCase
         // @mago-expect analysis:invalid-argument Integer field references are outside the contract
         new RequiredUnless(0, 1);
     }
+
+    #[Test]
+    public function it_never_matches_an_absent_reference_to_the_configured_sentinel(): void
+    {
+        $rule = new RequiredUnless('type', Missing::Value);
+
+        self::assertCount(1, $rule->validate(Missing::Value, new ValidationContext([])));
+        self::assertCount(1, $rule->validate(null, new ValidationContext([])));
+        self::assertSame([], $rule->validate('supplied', new ValidationContext([])));
+        self::assertCount(0, $rule->validate(null, new ValidationContext(['type' => Missing::Value])));
+    }
 }

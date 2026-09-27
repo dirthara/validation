@@ -10,6 +10,7 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidationContext;
 use Dirthara\Validation\Rule\Text\MaxLength;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class MaxLengthTest extends TestCase
 {
@@ -70,5 +71,30 @@ final class MaxLengthTest extends TestCase
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['maximum' => 3])],
             $rule->validate(context: new ValidationContext([]), value: 'abcd'),
         );
+    }
+
+    #[Test]
+    public function it_accepts_a_zero_size(): void
+    {
+        self::assertSame([], new MaxLength(0)->validate('', new ValidationContext([])));
+    }
+
+    #[Test]
+    public function it_rejects_a_negative_size_during_construction(): void
+    {
+        try {
+            new MaxLength(-1);
+            self::fail('Expected invalid rule configuration.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame(
+                [
+                    'rule' => MaxLength::class,
+                    'parameter' => 'maximum',
+                    'value' => -1,
+                ],
+                $exception->context,
+            );
+            self::assertSame('maximum must be zero or greater for ' . MaxLength::class . '.', $exception->getMessage());
+        }
     }
 }

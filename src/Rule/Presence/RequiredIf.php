@@ -26,7 +26,7 @@ final class RequiredIf implements Rule
      */
     public function validate(mixed $value, ValidationContext $context): array
     {
-        $required = $context->value($this->field) === $this->value;
+        $required = $context->has($this->field) && $context->value($this->field) === $this->value;
 
         if (!$required || !$value instanceof Missing && $value !== null) {
             return [];

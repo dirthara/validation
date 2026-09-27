@@ -29,8 +29,8 @@ In `Dirthara\Validation\Rule\Presence`.
 | `PresentUnless(string $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
 | `ProhibitedIf(string $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
 | `ProhibitedUnless(string $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
-| `RequiredWithAll(list<string> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
-| `RequiredWithoutAll(list<string> $fields)` | The current value exists and is non-null, or at least one referenced field exists and is non-null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when none of {others} are present` |
+| `RequiredWithAll(non-empty-list<string> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
+| `RequiredWithoutAll(non-empty-list<string> $fields)` | The current value exists and is non-null, or at least one referenced field exists and is non-null. `others` contains the list of keys. | `{input} is required when none of {others} are present` |
 
 ### Type
 
@@ -113,7 +113,8 @@ In `Dirthara\Validation\Rule\Structure`.
 |------|-------------|-----------------|
 | `Nested(Validator)` | The value is an array that passes the nested validator. | `{input} must be an array` |
 
-No rule converts a value: a numeric string such as `"18"` is a string, not a number, and fails the numeric rules.
+Validation never coerces values. `Numeric` accepts PHP numeric strings such as `"18"` and `"12.5"`, but numeric range
+and comparison rules require an actual integer or float unless explicitly documented otherwise.
 
 Every rule takes a `message` argument that replaces its default, as in `new Email(message: '{input} is not an email')`.
 The message in the table is the one the rule itself reports. `Each` and `Nested` also pass on the errors of the rules
@@ -136,7 +137,11 @@ new RequiredWithoutAll(['email', 'phone'], message: '{input} is needed without {
 ```
 
 Their `others` parameter is the original list of keys; the existing message renderer joins them with `, `.
-Both rules require the current value when given an empty list of references.
+Both rules require a non-empty list of string field names. Empty lists and non-string references throw
+`InvalidRuleException` during construction.
+
+Text lengths and collection counts must be zero or greater. Negative sizes throw `InvalidRuleException` during
+construction. Zero is valid, including for an exact empty string or collection.
 
 ## Compare with other fields
 
@@ -157,7 +162,8 @@ $validator = $factory->create([
 - **The other field is a sibling.** Inside a `Nested` validator, the rules see the fields of the nested array, not those of
   the outer input. The rules of an `Each` item see the fields next to the `Each` field.
 - **A missing other field** fails `Same` and `Different`, makes `RequiredIf` not require the field, and makes
-  `RequiredUnless` require it.
+  `RequiredUnless` require it. This also applies when the configured comparison value is `Missing::Value`: a missing
+  reference never satisfies equality.
 - **A missing current field** skips `Same` and `Different`, like any rule that does not validate a missing value. Add
   `Required` to make the field itself required.
 

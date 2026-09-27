@@ -54,4 +54,18 @@ final class ValidationResultTest extends TestCase
         $first = new ValidationError(messageKey: '{input} is required', path: [0]);
         self::assertSame([0 => [$first]], new ValidationResult([$first])->errorsByField());
     }
+
+    #[Test]
+    public function it_groups_colliding_rendered_fields_and_preserves_structural_paths(): void
+    {
+        $literal = new ValidationError('{input} is required', path: ['address.street']);
+        $nested = new ValidationError('{input} is required', path: ['address', 'street']);
+        $result = new ValidationResult([$literal, $nested]);
+
+        self::assertSame('address.street', $literal->field);
+        self::assertSame($literal->field, $nested->field);
+        self::assertSame(['address.street' => [$literal, $nested]], $result->errorsByField());
+        self::assertSame(['address.street'], $literal->path);
+        self::assertSame(['address', 'street'], $nested->path);
+    }
 }

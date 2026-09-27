@@ -10,6 +10,7 @@ use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\Rule\Text\Length;
 use Dirthara\Validation\ValidationContext;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class LengthTest extends TestCase
 {
@@ -70,5 +71,30 @@ final class LengthTest extends TestCase
             [new ValidationError(messageKey: '{input} is wrong', parameters: ['length' => 3])],
             $rule->validate(context: new ValidationContext([]), value: 'ab'),
         );
+    }
+
+    #[Test]
+    public function it_accepts_a_zero_size(): void
+    {
+        self::assertSame([], new Length(0)->validate('', new ValidationContext([])));
+    }
+
+    #[Test]
+    public function it_rejects_a_negative_size_during_construction(): void
+    {
+        try {
+            new Length(-1);
+            self::fail('Expected invalid rule configuration.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame(
+                [
+                    'rule' => Length::class,
+                    'parameter' => 'length',
+                    'value' => -1,
+                ],
+                $exception->context,
+            );
+            self::assertSame('length must be zero or greater for ' . Length::class . '.', $exception->getMessage());
+        }
     }
 }

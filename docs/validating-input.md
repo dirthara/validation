@@ -72,4 +72,5 @@ valid, not a filtered copy of it, so read the values you declared rules for from
 
 Validator inputs use named string fields (`array<string, mixed>`), including inside nested validators. Rule definitions
 also use string field names. Put numeric collections in a named field and validate their items with `Each`;
-integer indexes belong to collections, not validator field definitions.
+integer indexes belong to collections, not validator field definitions. The factory rejects integer field keys at
+construction with `InvalidRuleException`, including numeric string keys that PHP converts to integers.

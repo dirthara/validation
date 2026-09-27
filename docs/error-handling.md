@@ -28,12 +28,23 @@ try {
 }
 ```
 
+The factory also rejects integer field keys during construction with `InvalidRuleException`; its context contains
+`field`. PHP converts numeric string keys such as `'0'` to integers, so those keys are rejected too. Collection indexes
+inside `Each` remain valid integers.
+
 Rules that take arguments check them when they are created:
 
 | Rule                  | Throws when                                     | Context                  |
 |-----------------------|-------------------------------------------------|--------------------------|
 | `Regex`               | The pattern is not a valid regular expression.  | `pattern`                |
 | `Between`             | The minimum is greater than the maximum.        | `minimum`, `maximum`     |
+| `Length`, `MinLength`, `MaxLength` | The configured size is negative. | `rule`, `parameter`, `value` |
+| `Count`, `MinCount`, `MaxCount` | The configured count is negative. | `rule`, `parameter`, `value` |
+| `RequiredWithAll`, `RequiredWithoutAll` | The reference list is empty. | `rule` |
+| `RequiredWithAll`, `RequiredWithoutAll` | A reference is not a string. | `rule`, `fieldType` |
+
+For size and reference errors, `rule` is the rule class name. `parameter` names the size argument, and `value` is its
+configured value. `fieldType` describes the invalid reference type. Zero lengths and counts are valid.
 
 ## Failed validation
 

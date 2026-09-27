@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule\Presence;
 
+use stdClass;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,6 +15,7 @@ use Dirthara\Validation\Rule\Collection\Each;
 use Dirthara\Validation\Rule\Type\StringType;
 use Dirthara\Validation\Rule\Structure\Nested;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Dirthara\Validation\Exception\InvalidRuleException;
 use Dirthara\Validation\Rule\Presence\RequiredWithoutAll;
 
 final class RequiredWithoutAllTest extends TestCase
@@ -186,16 +188,47 @@ final class RequiredWithoutAllTest extends TestCase
     }
 
     #[Test]
-    public function it_requires_a_value_when_no_fields_are_configured(): void
+    public function it_rejects_an_empty_field_list(): void
     {
-        $rule = new RequiredWithoutAll([]);
+        try {
+            // @mago-expect analysis:possibly-invalid-argument An empty field list is invalid configuration
+            new RequiredWithoutAll([]);
+            self::fail('Expected invalid rule configuration.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame(['rule' => RequiredWithoutAll::class], $exception->context);
+            self::assertSame(
+                RequiredWithoutAll::class . ' requires at least one referenced field.',
+                $exception->getMessage(),
+            );
+        }
+    }
 
-        self::assertEquals(
-            [
-                new ValidationError(messageKey: '{input} is required when none of {others} are present', parameters: ['others' => []]),
-            ],
-            $rule->validate(Missing::Value, new ValidationContext([])),
-        );
-        self::assertSame([], $rule->validate(false, new ValidationContext([])));
+    /**
+     * @return iterable<string, array{mixed, string}>
+     */
+    public static function invalidFields(): iterable
+    {
+        yield 'integer' => [123, 'int'];
+        yield 'null' => [null, 'null'];
+        yield 'boolean' => [false, 'bool'];
+        yield 'array' => [[], 'array'];
+        yield 'object' => [new stdClass(), 'stdClass'];
+    }
+
+    #[Test]
+    #[DataProvider('invalidFields')]
+    public function it_rejects_non_string_references_at_construction(mixed $field, string $type): void
+    {
+        try {
+            // @mago-expect analysis:less-specific-nested-argument-type Invalid reference types are the point of the test
+            new RequiredWithoutAll(['company', $field]);
+            self::fail('Expected invalid rule configuration.');
+        } catch (InvalidRuleException $exception) {
+            self::assertSame(['rule' => RequiredWithoutAll::class, 'fieldType' => $type], $exception->context);
+            self::assertSame(
+                'Referenced fields must be strings for ' . RequiredWithoutAll::class . '.',
+                $exception->getMessage(),
+            );
+        }
     }
 }

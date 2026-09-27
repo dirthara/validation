@@ -16,6 +16,11 @@ description: What a validation returns, and what each error carries.
 | `failed()`         | `bool`                                      | Whether there is at least one error.            |
 | `errorsByField()`  | `array<array-key, list<ValidationError>>`   | The errors, grouped by their `field`.           |
 
+`errorsByField()` is a convenience for presentation: it groups errors using `$error->field` as the array key.
+The paths `['address.street']` and `['address', 'street']` both render as `address.street`, so their errors share
+one group. Literal field names containing dots remain supported. Use `$error->path` whenever you need an
+unambiguous structural location; neither `$error->field` nor `errorsByField()` preserves that distinction.
+
 ## Errors
 
 Every `ValidationError` carries:

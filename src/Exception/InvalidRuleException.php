@@ -46,4 +46,33 @@ final class InvalidRuleException extends InvalidArgumentException implements Val
             'maximum' => $maximum,
         ]);
     }
+
+    public static function invalidFieldName(int $field): self
+    {
+        return new self(message: 'Validator field names must be strings.', context: ['field' => $field]);
+    }
+
+    public static function negativeSize(string $rule, string $parameter, int $value): self
+    {
+        return new self(message: sprintf('%s must be zero or greater for %s.', $parameter, $rule), context: [
+            'rule' => $rule,
+            'parameter' => $parameter,
+            'value' => $value,
+        ]);
+    }
+
+    public static function emptyFields(string $rule): self
+    {
+        return new self(message: sprintf('%s requires at least one referenced field.', $rule), context: [
+            'rule' => $rule,
+        ]);
+    }
+
+    public static function invalidFieldReference(string $rule, mixed $field): self
+    {
+        return new self(message: sprintf('Referenced fields must be strings for %s.', $rule), context: [
+            'rule' => $rule,
+            'fieldType' => get_debug_type($field),
+        ]);
+    }
 }
