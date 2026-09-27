@@ -37,6 +37,7 @@ All rules live in `Dirthara\Validation\Rule`. The message in each table is the r
 | `Length(int $length)` | The value is a string of exactly that many characters. | `{input} must be exactly {length} characters long` |
 | `MinLength(int $minimum)` | The value is a string of at least that many characters. | `{input} must be at least {minimum} characters long` |
 | `MaxLength(int $maximum)` | The value is a string of at most that many characters. | `{input} must be at most {maximum} characters long` |
+| `Url` | The value is a string that is a valid URL. | `{input} must be a valid URL` |
 
 ### Numeric
 
