@@ -16,7 +16,7 @@ final class RequiredWithoutAll implements Rule
     }
 
     /**
-     * @param list<string|int> $fields
+     * @param list<string> $fields
      */
     public function __construct(
         private readonly array $fields,

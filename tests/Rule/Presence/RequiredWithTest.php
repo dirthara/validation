@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule\Presence;
 
+use TypeError;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,7 +20,7 @@ use Dirthara\Validation\Rule\Presence\RequiredWith;
 final class RequiredWithTest extends TestCase
 {
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function validValues(): iterable
     {
@@ -46,7 +47,7 @@ final class RequiredWithTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('validValues')]
@@ -58,7 +59,7 @@ final class RequiredWithTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function invalidValues(): iterable
     {
@@ -77,7 +78,7 @@ final class RequiredWithTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('invalidValues')]
@@ -182,15 +183,11 @@ final class RequiredWithTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_integer_field_keys(): void
+    public function it_rejects_integer_field_references(): void
     {
-        self::assertEquals(
-            [
-                new ValidationError(messageKey: '{input} is required when {other} is present', parameters: [
-                    'other' => 0,
-                ]),
-            ],
-            new RequiredWith(0)->validate(Missing::Value, new ValidationContext([0 => 1])),
-        );
+        $this->expectException(TypeError::class);
+
+        // @mago-expect analysis:invalid-argument Integer field references are outside the contract
+        new RequiredWith(0);
     }
 }

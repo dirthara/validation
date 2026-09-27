@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule\Presence;
 
+use TypeError;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,7 +20,7 @@ use Dirthara\Validation\Rule\Presence\ProhibitedIf;
 final class ProhibitedIfTest extends TestCase
 {
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function validValues(): iterable
     {
@@ -52,7 +53,7 @@ final class ProhibitedIfTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('validValues')]
@@ -64,7 +65,7 @@ final class ProhibitedIfTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function invalidValues(): iterable
     {
@@ -77,7 +78,7 @@ final class ProhibitedIfTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('invalidValues')]
@@ -194,17 +195,12 @@ final class ProhibitedIfTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_integer_field_keys(): void
+    public function it_rejects_integer_field_references(): void
     {
-        self::assertEquals(
-            [
-                new ValidationError(messageKey: '{input} is prohibited when {other} is {value}', parameters: [
-                    'other' => 0,
-                    'value' => 1,
-                ]),
-            ],
-            new ProhibitedIf(0, 1)->validate(null, new ValidationContext([0 => 1])),
-        );
+        $this->expectException(TypeError::class);
+
+        // @mago-expect analysis:invalid-argument Integer field references are outside the contract
+        new ProhibitedIf(0, 1);
     }
 
     #[Test]

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule\Presence;
 
+use TypeError;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Missing;
 use Dirthara\Validation\Contract\Rule;
@@ -102,5 +103,14 @@ final class RequiredUnlessTest extends TestCase
             '{input} is needed for all but {value} accounts',
             $rule->validate(null, new ValidationContext([]))[0]->messageKey,
         );
+    }
+
+    #[Test]
+    public function it_rejects_integer_field_references(): void
+    {
+        $this->expectException(TypeError::class);
+
+        // @mago-expect analysis:invalid-argument Integer field references are outside the contract
+        new RequiredUnless(0, 1);
     }
 }

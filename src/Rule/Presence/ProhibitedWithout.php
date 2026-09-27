@@ -16,7 +16,7 @@ final class ProhibitedWithout implements Rule
     }
 
     public function __construct(
-        private readonly string|int $field,
+        private readonly string $field,
         public readonly string $message = '{input} is prohibited when {other} is not present',
     ) {}
 

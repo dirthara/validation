@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dirthara\Validation\Tests\Rule\Comparison;
 
 use stdClass;
+use TypeError;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -23,7 +24,7 @@ use const NAN;
 final class GreaterThanOrEqualFieldTest extends TestCase
 {
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function validValues(): iterable
     {
@@ -36,7 +37,7 @@ final class GreaterThanOrEqualFieldTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('validValues')]
@@ -48,7 +49,7 @@ final class GreaterThanOrEqualFieldTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function invalidValues(): iterable
     {
@@ -75,7 +76,7 @@ final class GreaterThanOrEqualFieldTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('invalidValues')]
@@ -183,15 +184,11 @@ final class GreaterThanOrEqualFieldTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_integer_field_keys(): void
+    public function it_rejects_integer_field_references(): void
     {
-        self::assertEquals(
-            [
-                new ValidationError(messageKey: '{input} must be greater than or equal to {other}', parameters: [
-                    'other' => 0,
-                ]),
-            ],
-            new GreaterThanOrEqualField(0)->validate(10, new ValidationContext([0 => 20])),
-        );
+        $this->expectException(TypeError::class);
+
+        // @mago-expect analysis:invalid-argument Integer field references are outside the contract
+        new GreaterThanOrEqualField(0);
     }
 }

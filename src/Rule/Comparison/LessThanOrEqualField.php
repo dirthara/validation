@@ -17,7 +17,7 @@ final class LessThanOrEqualField implements Rule
     use SkipsMissing;
 
     public function __construct(
-        private readonly string|int $field,
+        private readonly string $field,
         public readonly string $message = '{input} must be less than or equal to {other}',
     ) {}
 

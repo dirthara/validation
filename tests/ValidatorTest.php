@@ -72,11 +72,11 @@ final class ValidatorTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_input_with_integer_keys(): void
+    public function it_accepts_collections_inside_named_fields(): void
     {
-        $validator = new ValidatorFactory()->create(['email' => new Email()]);
+        $validator = new ValidatorFactory()->create(['emails' => new Each(new Email())]);
 
-        self::assertSame([], $validator->validate([0 => 'first', 'email' => 'a@example.com'])->errors);
+        self::assertSame([], $validator->validate(['emails' => ['a@example.com', 'b@example.com']])->errors);
     }
 
     #[Test]

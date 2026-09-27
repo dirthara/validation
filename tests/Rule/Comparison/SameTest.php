@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dirthara\Validation\Tests\Rule\Comparison;
 
+use TypeError;
 use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Contract\Rule;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,7 +25,6 @@ final class SameTest extends TestCase
     public function it_accepts_a_value_identical_to_the_other_field(): void
     {
         self::assertSame([], new Same('email')->validate('secret', new ValidationContext(['email' => 'secret'])));
-        self::assertSame([], new Same(0)->validate(18, new ValidationContext([0 => 18])));
     }
 
     #[Test]
@@ -74,5 +74,14 @@ final class SameTest extends TestCase
             [new ValidationError(messageKey: '{input} does not match {other}', parameters: ['other' => 'email'])],
             $rule->validate('other', new ValidationContext(['email' => 'secret'])),
         );
+    }
+
+    #[Test]
+    public function it_rejects_integer_field_references(): void
+    {
+        $this->expectException(TypeError::class);
+
+        // @mago-expect analysis:invalid-argument Integer field references are outside the contract
+        new Same(0);
     }
 }

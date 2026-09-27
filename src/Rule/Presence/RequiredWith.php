@@ -16,7 +16,7 @@ final class RequiredWith implements Rule
     }
 
     public function __construct(
-        private readonly string|int $field,
+        private readonly string $field,
         public readonly string $message = '{input} is required when {other} is present',
     ) {}
 

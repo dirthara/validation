@@ -16,7 +16,7 @@ final class ProhibitedIf implements Rule
     }
 
     public function __construct(
-        private readonly string|int $field,
+        private readonly string $field,
         private readonly mixed $value,
         public readonly string $message = '{input} is prohibited when {other} is {value}',
     ) {}

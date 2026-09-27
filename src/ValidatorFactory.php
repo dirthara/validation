@@ -11,7 +11,7 @@ use Dirthara\Validation\Contract\Validator as ValidatorContract;
 final readonly class ValidatorFactory
 {
     /**
-     * @param array<array-key, Rule|list<Rule>> $rules
+     * @param array<string, Rule|list<Rule>> $rules
      */
     public function create(array $rules): ValidatorContract
     {

@@ -70,4 +70,6 @@ valid, not a filtered copy of it, so read the values you declared rules for from
 
 ## Input keys
 
-The input is an array with any keys. Integer keys, which decoded JSON often has, are looked up like any other key.
+Validator inputs use named string fields (`array<string, mixed>`), including inside nested validators. Rule definitions
+also use string field names. Put numeric collections in a named field and validate their items with `Each`;
+integer indexes belong to collections, not validator field definitions.

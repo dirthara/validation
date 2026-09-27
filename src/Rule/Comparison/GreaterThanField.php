@@ -17,7 +17,7 @@ final class GreaterThanField implements Rule
     use SkipsMissing;
 
     public function __construct(
-        private readonly string|int $field,
+        private readonly string $field,
         public readonly string $message = '{input} must be greater than {other}',
     ) {}
 

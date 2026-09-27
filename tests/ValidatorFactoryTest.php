@@ -37,16 +37,19 @@ final class ValidatorFactoryTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_a_validator_for_fields_with_integer_keys(): void
+    public function it_creates_a_validator_for_literal_string_field_names(): void
     {
-        $errors = new ValidatorFactory()->create([0 => new Required(), '1' => new Email()])->validate([
-            1 => 'invalid',
+        $errors = new ValidatorFactory()->create([
+            'contact.name' => new Required(),
+            'contact.email' => new Email(),
+        ])->validate([
+            'contact.email' => 'invalid',
         ])->errors;
 
-        self::assertSame([0], $errors[0]->path);
-        self::assertSame('0 is required', $errors[0]->message);
-        self::assertSame([1], $errors[1]->path);
-        self::assertSame('1 must be a valid email address', $errors[1]->message);
+        self::assertSame(['contact.name'], $errors[0]->path);
+        self::assertSame('contact.name is required', $errors[0]->message);
+        self::assertSame(['contact.email'], $errors[1]->path);
+        self::assertSame('contact.email must be a valid email address', $errors[1]->message);
     }
 
     #[Test]

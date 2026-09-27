@@ -11,14 +11,14 @@ final readonly class Validator implements ValidatorContract
     /**
      * @internal
      *
-     * @param array<array-key, RuleSet> $rules
+     * @param array<string, RuleSet> $rules
      */
     public function __construct(
         private array $rules,
     ) {}
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     public function validate(array $input): ValidationResult
     {

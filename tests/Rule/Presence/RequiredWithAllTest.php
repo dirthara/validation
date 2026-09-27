@@ -19,7 +19,7 @@ use Dirthara\Validation\Rule\Presence\RequiredWithAll;
 final class RequiredWithAllTest extends TestCase
 {
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function validValues(): iterable
     {
@@ -54,7 +54,7 @@ final class RequiredWithAllTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('validValues')]
@@ -66,7 +66,7 @@ final class RequiredWithAllTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{mixed, array<array-key, mixed>}>
+     * @return iterable<string, array{mixed, array<string, mixed>}>
      */
     public static function invalidValues(): iterable
     {
@@ -79,7 +79,7 @@ final class RequiredWithAllTest extends TestCase
     }
 
     /**
-     * @param array<array-key, mixed> $input
+     * @param array<string, mixed> $input
      */
     #[Test]
     #[DataProvider('invalidValues')]
@@ -172,17 +172,17 @@ final class RequiredWithAllTest extends TestCase
     #[Test]
     public function it_uses_literal_field_keys(): void
     {
-        $rule = new RequiredWithAll([0, 'other.key']);
+        $rule = new RequiredWithAll(['second', 'other.key']);
 
         self::assertEquals(
             [
                 new ValidationError(messageKey: '{input} is required when all of {others} are present', parameters: ['others' => [
-                    0,
+                    'second',
                     'other.key',
                 ]]),
             ],
             $rule->validate(Missing::Value, new ValidationContext([
-                ...['other.key' => 1, 0 => 2],
+                ...['other.key' => 1, 'second' => 2],
                 'other' => ['key' => 1],
             ])),
         );

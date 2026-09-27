@@ -19,18 +19,18 @@ In `Dirthara\Validation\Rule\Presence`.
 | `Required` | The value is present and not `null`. | `{input} is required` |
 | `Present` | The value is present, even when it is `null`. | `{input} must be present` |
 | `Nullable` | Never fails. Makes the field pass for `null`. | `{input} may be null` |
-| `RequiredIf(string\|int $field, mixed $value)` | Like `Required`, but only when the other field is identical to the value. | `{input} is required when {other} is {value}` |
-| `RequiredUnless(string\|int $field, mixed $value)` | Like `Required`, unless the other field is identical to the value. | `{input} is required unless {other} is {value}` |
-| `RequiredWith(string\|int $field)` | The current value exists and is non-null, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is required when {other} is present` |
-| `RequiredWithout(string\|int $field)` | The current value exists and is non-null, when the other field is missing or null. | `{input} is required when {other} is not present` |
-| `ProhibitedWith(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is prohibited when {other} is present` |
-| `ProhibitedWithout(string\|int $field)` | The current key is absent, including no explicit `null`, when the other field is missing or null. | `{input} is prohibited when {other} is not present` |
-| `PresentIf(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), when the other field strictly equals the configured value. | `{input} must be present when {other} is {value}` |
-| `PresentUnless(string\|int $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
-| `ProhibitedIf(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
-| `ProhibitedUnless(string\|int $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
-| `RequiredWithAll(list<string\|int> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
-| `RequiredWithoutAll(list<string\|int> $fields)` | The current value exists and is non-null, or at least one referenced field exists and is non-null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when none of {others} are present` |
+| `RequiredIf(string $field, mixed $value)` | Like `Required`, but only when the other field is identical to the value. | `{input} is required when {other} is {value}` |
+| `RequiredUnless(string $field, mixed $value)` | Like `Required`, unless the other field is identical to the value. | `{input} is required unless {other} is {value}` |
+| `RequiredWith(string $field)` | The current value exists and is non-null, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is required when {other} is present` |
+| `RequiredWithout(string $field)` | The current value exists and is non-null, when the other field is missing or null. | `{input} is required when {other} is not present` |
+| `ProhibitedWith(string $field)` | The current key is absent, including no explicit `null`, when the other field exists and is non-null (even `false`, `0`, `''`, or `[]`). | `{input} is prohibited when {other} is present` |
+| `ProhibitedWithout(string $field)` | The current key is absent, including no explicit `null`, when the other field is missing or null. | `{input} is prohibited when {other} is not present` |
+| `PresentIf(string $field, mixed $value)` | The current key exists (explicit `null` is allowed), when the other field strictly equals the configured value. | `{input} must be present when {other} is {value}` |
+| `PresentUnless(string $field, mixed $value)` | The current key exists (explicit `null` is allowed), unless the other field strictly equals the configured value. | `{input} must be present unless {other} is {value}` |
+| `ProhibitedIf(string $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), when the other field strictly equals the configured value. | `{input} is prohibited when {other} is {value}` |
+| `ProhibitedUnless(string $field, mixed $value)` | The current key is absent (supplied `null`, `false`, `0`, `''`, and `[]` fail), unless the other field strictly equals the configured value. | `{input} is prohibited unless {other} is {value}` |
+| `RequiredWithAll(list<string> $fields)` | The current value exists and is non-null, or at least one referenced field is missing or null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when all of {others} are present` |
+| `RequiredWithoutAll(list<string> $fields)` | The current value exists and is non-null, or at least one referenced field exists and is non-null. An empty list always requires the current value. `others` contains the list of keys. | `{input} is required when none of {others} are present` |
 
 ### Type
 
@@ -78,12 +78,12 @@ In `Dirthara\Validation\Rule\Comparison`.
 
 | Rule | Passes when | Default message |
 |------|-------------|-----------------|
-| `Same(string\|int $field)` | The value is identical to the other field's value. | `{input} must be the same as {other}` |
-| `Different(string\|int $field)` | The value is not identical to the other field's value. | `{input} must be different from {other}` |
-| `GreaterThanField(string\|int $field)` | Both values are integers or floats and the current value is greater than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than {other}` |
-| `GreaterThanOrEqualField(string\|int $field)` | Both values are integers or floats and the current value is greater than or equal to the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than or equal to {other}` |
-| `LessThanField(string\|int $field)` | Both values are integers or floats and the current value is less than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be less than {other}` |
-| `LessThanOrEqualField(string\|int $field)` | Both values are integers or floats and the current value is less than or equal to the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be less than or equal to {other}` |
+| `Same(string $field)` | The value is identical to the other field's value. | `{input} must be the same as {other}` |
+| `Different(string $field)` | The value is not identical to the other field's value. | `{input} must be different from {other}` |
+| `GreaterThanField(string $field)` | Both values are integers or floats and the current value is greater than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than {other}` |
+| `GreaterThanOrEqualField(string $field)` | Both values are integers or floats and the current value is greater than or equal to the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be greater than or equal to {other}` |
+| `LessThanField(string $field)` | Both values are integers or floats and the current value is less than the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be less than {other}` |
+| `LessThanOrEqualField(string $field)` | Both values are integers or floats and the current value is less than or equal to the other field's value. Missing or unsupported references fail; a missing current field is skipped. | `{input} must be less than or equal to {other}` |
 
 ### Choice
 
@@ -140,7 +140,8 @@ Both rules require the current value when given an empty list of references.
 
 ## Compare with other fields
 
-Rules that read another field name it by its literal key and put that key in their error parameters as `other`.
+Contextual field references are strings. Rules that read another field name it by its literal key and put that key
+in their error parameters as `other`.
 `Same`, `Different`, `RequiredIf`, and `RequiredUnless` use strict comparison (`===`).
 
 ```php

@@ -30,6 +30,7 @@ final class Nested implements Rule
             return [new ValidationError(messageKey: $this->message)];
         }
 
+        /** @var array<string, mixed> $value */
         return $this->validator->validate($value)->errors;
     }
 }
