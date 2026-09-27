@@ -4,8 +4,8 @@
 
 # Dirthara Validation
 
-Validation for the Dirthara framework. This repository is the initial package scaffold; no public API or release is available yet. Usage 
-documentation lives in [`docs`](docs/intro.md) and is published on the Dirthara documentation site at 
+Validation for the Dirthara framework: check input arrays against rules per field, with nested input and structured 
+errors. Usage documentation lives in [`docs`](docs/intro.md) and is published on the Dirthara documentation site at 
 <https://dirthara.github.io/docs/>, which documents every package in the framework.
 
 ## Installation
