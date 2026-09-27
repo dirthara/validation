@@ -19,12 +19,8 @@ final readonly class Nested implements Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array
+    public function validate(mixed $value): array
     {
-        if (!$present || $value === null) {
-            return [];
-        }
-
         if (!is_array($value)) {
             return [new ValidationError(field: '', message: 'The value must be an array.', code: 'array')];
         }

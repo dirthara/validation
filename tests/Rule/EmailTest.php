@@ -19,13 +19,6 @@ final class EmailTest extends TestCase
         self::assertSame([], new Email()->validate('user@example.com'));
     }
 
-    #[Test]
-    public function it_skips_a_missing_or_null_value(): void
-    {
-        self::assertSame([], new Email()->validate('not an email', present: false));
-        self::assertSame([], new Email()->validate(null));
-    }
-
     /**
      * @return iterable<string, array{mixed}>
      */

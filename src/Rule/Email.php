@@ -17,12 +17,8 @@ final readonly class Email implements Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array
+    public function validate(mixed $value): array
     {
-        if (!$present || $value === null) {
-            return [];
-        }
-
         if (is_string($value) && filter_var($value, FILTER_VALIDATE_EMAIL) !== false) {
             return [];
         }

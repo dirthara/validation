@@ -16,7 +16,7 @@ final readonly class FailingRule implements Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array
+    public function validate(mixed $value): array
     {
         return [new ValidationError(field: $this->field, message: 'The value failed.', code: 'failing')];
     }

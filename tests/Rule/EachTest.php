@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
-use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class EachTest extends TestCase
@@ -23,13 +23,6 @@ final class EachTest extends TestCase
     {
         self::assertSame([], new Each(new Email())->validate(['a@example.com', 'b@example.com']));
         self::assertSame([], new Each(new Email())->validate([]));
-    }
-
-    #[Test]
-    public function it_skips_a_missing_or_null_value(): void
-    {
-        self::assertSame([], new Each(new FailingRule())->validate(['item'], present: false));
-        self::assertSame([], new Each(new FailingRule())->validate(null));
     }
 
     #[Test]
@@ -44,12 +37,11 @@ final class EachTest extends TestCase
     #[Test]
     public function it_prefixes_each_error_with_the_key_of_its_item(): void
     {
-        $errors = new Each([new Email(), new FailingRule('inner')])->validate(['a@example.com', 'first' => 'invalid']);
+        $errors = new Each([new Email(), new FailingRule('inner')])->validate(['invalid', 'first' => 'a@example.com']);
 
         self::assertEquals(
             [
-                new ValidationError(field: '0.inner', message: 'The value failed.', code: 'failing'),
-                new ValidationError(field: 'first', message: 'The value must be a valid email address.', code: 'email'),
+                new ValidationError(field: '0', message: 'The value must be a valid email address.', code: 'email'),
                 new ValidationError(field: 'first.inner', message: 'The value failed.', code: 'failing'),
             ],
             $errors,
@@ -68,20 +60,19 @@ final class EachTest extends TestCase
     }
 
     #[Test]
-    public function it_treats_every_item_as_present(): void
+    public function it_skips_a_null_item_unless_it_is_required(): void
     {
-        $errors = new Each(new RequiredRule())->validate(['value', null]);
-
+        self::assertSame([], new Each(new Email())->validate(['a@example.com', null]));
         self::assertEquals(
             [new ValidationError(field: '1', message: 'The value is required.', code: 'required')],
-            $errors,
+            new Each([new Required(), new Email()])->validate(['a@example.com', null]),
         );
     }
 
     #[Test]
     public function it_validates_each_item_with_a_nested_validator(): void
     {
-        $each = new Each(new Nested(new ValidatorFactory()->create(['email' => [new RequiredRule(), new Email()]])));
+        $each = new Each(new Nested(new ValidatorFactory()->create(['email' => [new Required(), new Email()]])));
 
         $errors = $each->validate([['email' => 'a@example.com'], ['email' => 'invalid'], [], 'not an array', null]);
 

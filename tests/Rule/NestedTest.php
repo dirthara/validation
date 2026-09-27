@@ -10,7 +10,6 @@ use Dirthara\Validation\Rule\Nested;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
-use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 
 final class NestedTest extends TestCase
 {
@@ -24,15 +23,6 @@ final class NestedTest extends TestCase
             [new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email')],
             $rule->validate(['email' => 'invalid']),
         );
-    }
-
-    #[Test]
-    public function it_skips_a_missing_or_null_value(): void
-    {
-        $rule = new Nested(new ValidatorFactory()->create(['email' => new RequiredRule()]));
-
-        self::assertSame([], $rule->validate('ignored', present: false));
-        self::assertSame([], $rule->validate(null));
     }
 
     #[Test]

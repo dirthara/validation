@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\RuleSet;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
 use Dirthara\Validation\Tests\Fixtures\FailingRule;
-use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class RuleSetTest extends TestCase
@@ -73,45 +73,51 @@ final class RuleSetTest extends TestCase
     }
 
     #[Test]
-    public function it_collects_the_errors_of_every_rule_in_order(): void
+    public function it_stops_at_the_first_rule_that_fails(): void
     {
-        $errors = RuleSet::from([new FailingRule('first'), new Email(), new FailingRule()])->validate('invalid');
+        $rules = RuleSet::from([new Email(), new FailingRule('first'), new FailingRule('second')]);
 
         self::assertEquals(
-            [
-                new ValidationError(field: 'first', message: 'The value failed.', code: 'failing'),
-                new ValidationError(field: '', message: 'The value must be a valid email address.', code: 'email'),
-                new ValidationError(field: '', message: 'The value failed.', code: 'failing'),
-            ],
-            $errors,
+            [new ValidationError(field: '', message: 'The value must be a valid email address.', code: 'email')],
+            $rules->validate('invalid'),
+        );
+        self::assertEquals(
+            [new ValidationError(field: 'first', message: 'The value failed.', code: 'failing')],
+            $rules->validate('a@example.com'),
         );
     }
 
     #[Test]
-    public function it_passes_presence_to_its_rules(): void
+    public function it_skips_every_rule_for_a_null_value(): void
     {
-        $rules = RuleSet::from(new RequiredRule());
+        self::assertSame([], RuleSet::from([new Email(), new FailingRule()])->validate(null));
+    }
 
-        self::assertSame([], $rules->validate('value'));
+    #[Test]
+    public function it_runs_only_the_required_rule_for_a_null_value(): void
+    {
+        $rules = RuleSet::from([new FailingRule(), new Required(), new Email()]);
+
         self::assertEquals(
             [new ValidationError(field: '', message: 'The value is required.', code: 'required')],
-            $rules->validate('value', present: false),
+            $rules->validate(null),
+        );
+        self::assertEquals(
+            [new ValidationError(field: '', message: 'The value failed.', code: 'failing')],
+            $rules->validate('a@example.com'),
         );
     }
 
     #[Test]
-    public function it_runs_a_nested_rule_in_order_with_the_others(): void
+    public function it_runs_a_nested_rule_after_the_rules_before_it_pass(): void
     {
         $rules = RuleSet::from([
-            new FailingRule(),
+            new Required(),
             new Nested(new ValidatorFactory()->create(['email' => new Email()])),
         ]);
 
         self::assertEquals(
-            [
-                new ValidationError(field: '', message: 'The value failed.', code: 'failing'),
-                new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email'),
-            ],
+            [new ValidationError(field: 'email', message: 'The value must be a valid email address.', code: 'email')],
             $rules->validate(['email' => 'invalid']),
         );
     }

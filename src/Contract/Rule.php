@@ -11,5 +11,5 @@ interface Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array;
+    public function validate(mixed $value): array;
 }

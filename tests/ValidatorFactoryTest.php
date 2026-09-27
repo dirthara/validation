@@ -8,10 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
 use Dirthara\Validation\ValidatorFactory;
-use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 final class ValidatorFactoryTest extends TestCase
@@ -20,8 +20,8 @@ final class ValidatorFactoryTest extends TestCase
     public function it_creates_a_validator_from_rules_per_field(): void
     {
         $validator = new ValidatorFactory()->create([
-            'name' => new RequiredRule(),
-            'email' => [new RequiredRule(), new Email()],
+            'name' => new Required(),
+            'email' => [new Required(), new Email()],
             'address' => new Nested(new ValidatorFactory()->create(['email' => new Email()])),
         ]);
 

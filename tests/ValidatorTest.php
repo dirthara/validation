@@ -10,9 +10,9 @@ use Dirthara\Validation\Rule\Each;
 use Dirthara\Validation\Validator;
 use Dirthara\Validation\Rule\Email;
 use Dirthara\Validation\Rule\Nested;
+use Dirthara\Validation\Rule\Required;
 use PHPUnit\Framework\Attributes\Test;
 use Dirthara\Validation\ValidationError;
-use Dirthara\Validation\Tests\Fixtures\RequiredRule;
 use Dirthara\Validation\Contract\Validator as ValidatorContract;
 
 final class ValidatorTest extends TestCase
@@ -20,7 +20,7 @@ final class ValidatorTest extends TestCase
     #[Test]
     public function it_passes_input_that_meets_every_rule(): void
     {
-        $validator = new Validator(['email' => RuleSet::from([new RequiredRule(), new Email()])]);
+        $validator = new Validator(['email' => RuleSet::from([new Required(), new Email()])]);
 
         self::assertInstanceOf(ValidatorContract::class, $validator);
         self::assertSame([], $validator->validate(['email' => 'a@example.com'])->errors);
@@ -48,9 +48,9 @@ final class ValidatorTest extends TestCase
     }
 
     #[Test]
-    public function it_tells_a_missing_field_from_a_null_one(): void
+    public function it_treats_a_missing_field_like_a_null_one(): void
     {
-        $validator = new Validator(['name' => RuleSet::from(new RequiredRule())]);
+        $validator = new Validator(['name' => RuleSet::from(new Required())]);
         $required = new ValidationError(field: 'name', message: 'The value is required.', code: 'required');
 
         self::assertEquals([$required], $validator->validate([])->errors);

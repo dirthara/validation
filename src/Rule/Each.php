@@ -25,12 +25,8 @@ final readonly class Each implements Rule
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array
+    public function validate(mixed $value): array
     {
-        if (!$present || $value === null) {
-            return [];
-        }
-
         if (!is_iterable($value)) {
             return [
                 new ValidationError(field: '', message: 'The value must be iterable.', code: 'iterable'),

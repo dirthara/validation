@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Dirthara\Validation;
 
 use Dirthara\Validation\Contract\Rule;
+use Dirthara\Validation\Rule\Required;
 use Dirthara\Validation\Exception\InvalidRuleException;
 
 use function is_array;
 use function array_map;
-use function array_push;
 use function array_values;
 
 /**
@@ -39,15 +39,35 @@ final readonly class RuleSet
     /**
      * @return list<ValidationError>
      */
-    public function validate(mixed $value, bool $present = true): array
+    public function validate(mixed $value): array
     {
-        $errors = [];
-
-        foreach ($this->rules as $rule) {
-            array_push($errors, ...$rule->validate($value, $present));
+        if ($value === null) {
+            return $this->validateMissing();
         }
 
-        return $errors;
+        foreach ($this->rules as $rule) {
+            $errors = $rule->validate($value);
+
+            if ($errors !== []) {
+                return $errors;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @return list<ValidationError>
+     */
+    private function validateMissing(): array
+    {
+        foreach ($this->rules as $rule) {
+            if ($rule instanceof Required) {
+                return $rule->validate(null);
+            }
+        }
+
+        return [];
     }
 
     private static function rule(mixed $rule): Rule
